@@ -22,7 +22,7 @@ button.d{color:var(--red);border-color:var(--red);padding:6px 12px;font-size:14p
 .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.row>*{flex:1}
 a.lnk{color:var(--pur);cursor:pointer;font-weight:600;text-decoration:underline}
 input[type=range]{width:100%;accent-color:var(--pur);height:28px}
-.rec{display:flex;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--bd)}
+.rec{display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--bd)}
 .rec:last-child{border:0}.rec img{width:54px;height:40px;object-fit:cover;border-radius:8px;cursor:pointer;background:var(--purl)}
 .rec .t{flex:1;font-size:14px}
 #stage{position:relative;background:#000;border-radius:16px;overflow:hidden;height:min(62vh,560px);display:flex;align-items:center;justify-content:center}
@@ -63,6 +63,21 @@ const dkey=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+Str
 const fmtDT=ts=>new Date(ts).toLocaleString("ru-RU",{day:"2-digit",month:"long",year:"numeric",hour:"2-digit",minute:"2-digit",second:"2-digit"});
 const urlOf=r=>{const p=photos.find(p=>p.id===r.pid);return p?p.url:r.url};
 function ask(msg,yes){const o=h("div",{style:"position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;z-index:20;padding:16px"},h("div",{cls:"card",style:"max-width:340px;margin:0"},h("div",{style:"margin-bottom:14px;font-weight:600"},msg),h("div",{cls:"row"},h("button",{on:{click:()=>o.remove()}},"Отмена"),h("button",{cls:"p",on:{click:()=>{o.remove();yes()}}},"Удалить"))));document.body.append(o)}
+function fb(t){const a=h("textarea",{style:"position:fixed;opacity:0"});a.value=t;document.body.append(a);a.select();let ok=false;try{ok=document.execCommand("copy")}catch(e){}a.remove();toast(ok?"Скопировано, можно отправлять":"Не удалось скопировать")}
+function copy(t){if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(t).then(()=>toast("Скопировано, можно отправлять"),()=>fb(t))}else fb(t)}
+const bc={};
+function blobOf(r){const u=urlOf(r);if(!u)return Promise.resolve(null);return bc[u]||(bc[u]=fetch(u).then(x=>x.ok?x.blob():null).catch(()=>null))}
+async function shareRec(r){
+  const u=urlOf(r),site=location.href.split("#")[0],photo=u?new URL(u,location.href).href:"";
+  const head="Я кончил за "+fmtMs(r.ms)+" ("+fmtDT(r.ts)+")";
+  const full=head+(photo?". Вот на какое фото: "+photo:"")+"\n"+site;
+  if(!navigator.share){copy(full);return}
+  try{
+    const bl=navigator.canShare?await blobOf(r):null;
+    if(bl){const nm=decodeURIComponent((u.split("/").pop()||"foto.jpg")),f=new File([bl],nm,{type:bl.type||"image/jpeg"});
+      if(navigator.canShare({files:[f]})){await navigator.share({files:[f],title:"Слайд-шоу",text:head+"\n"+site});return}}
+  }catch(e){if(e&&e.name==="AbortError")return}
+  try{await navigator.share({title:"Слайд-шоу",text:head+(photo?". Вот на какое фото: "+photo:""),url:site})}catch(e){if(!e||e.name!=="AbortError")copy(full)}}
 function openPhoto(u){if(!u){toast("Фото недоступно");return}$("#mimg").src=u;$("#modal").style.display="flex"}
 $("#mclose").onclick=()=>$("#modal").style.display="none";
 $("#modal").onclick=e=>{if(e.target.id==="modal")$("#modal").style.display="none"};
@@ -112,10 +127,10 @@ function show(){
     h("button",{on:{click:prev},style:"width:100%"},"← Назад"),
     h("div",{style:"height:10px"}),h("button",{cls:"p big",on:{click:finish}},"Кончить"))}
 function result(){
-  const r=pending;
+  const r=pending;blobOf(r);
   app.append(h("h1",null,"Готово! 🎉"),h("div",{cls:"mut"},"Фото закреплено в календаре"),h("div",{cls:"big-t"},fmtMs(r.ms)),
     h("div",{cls:"card"},h("img",{src:r.url,alt:"",style:"width:100%;border-radius:12px;cursor:pointer",on:{click:()=>openPhoto(r.url)}}),h("div",{cls:"mut"},fmtDT(r.ts))),
-    h("div",{cls:"row"},h("button",{cls:"p",on:{click:()=>go("home")}},"На главную"),h("button",{on:{click:()=>{calM=new Date(r.ts);calSel=dkey(new Date(r.ts));go("calendar")}}},"Открыть календарь")))}
+    h("button",{cls:"p big",on:{click:()=>shareRec(r)}},"Поделиться результатом"),h("div",{style:"height:10px"}),h("div",{cls:"row"},h("button",{cls:"p",on:{click:()=>go("home")}},"На главную"),h("button",{on:{click:()=>{calM=new Date(r.ts);calSel=dkey(new Date(r.ts));go("calendar")}}},"Открыть календарь")))}
 function calendar(){
   const all=recs(),days=new Set(all.map(r=>dkey(new Date(r.ts)))),y=calM.getFullYear(),m=calM.getMonth();
   const first=new Date(y,m,1),off=(first.getDay()+6)%7,dim=new Date(y,m+1,0).getDate(),today=dkey(new Date());
@@ -133,7 +148,7 @@ function calendar(){
       calSel&&!list.length?h("div",{cls:"mut"},"В этот день записей нет."):null,
       list.map(r=>h("div",{cls:"rec"},h("img",{src:urlOf(r),alt:"",on:{click:()=>openPhoto(urlOf(r))}}),
         h("div",{cls:"t"},new Date(r.ts).toLocaleTimeString("ru-RU"),h("br"),h("b",null,"⏱ "+fmtMs(r.ms))),
-        h("button",{on:{click:()=>openPhoto(urlOf(r))}},"Открыть"),
+        h("button",{on:{click:()=>shareRec(r)}},"Поделиться"),h("button",{on:{click:()=>openPhoto(urlOf(r))}},"Открыть"),
         h("button",{cls:"d",on:{click:()=>ask("Удалить эту запись?",()=>{lsSet("ss_rec",recs().filter(x=>x.id!==r.id));render();toast("Запись удалена")})}},"Удалить")))))}
 
 /* ---------- список фото из папки photos репозитория ---------- */
