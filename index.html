@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Слайд-шоу</title>
+<style>
+:root{--bg:#f4f1f8;--fg:#1d1a24;--card:#fff;--mut:#6d6678;--pur:#7c3aed;--purl:#ede4ff;--bd:#ddd5ea;--red:#d6335b;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14111a;--fg:#efeaf7;--card:#1e1a28;--mut:#a79fb6;--pur:#a577ff;--purl:#3a2a63;--bd:#332c44;--red:#ff6b8e}}
+:root[data-theme="dark"]{--bg:#14111a;--fg:#efeaf7;--card:#1e1a28;--mut:#a79fb6;--pur:#a577ff;--purl:#3a2a63;--bd:#332c44;--red:#ff6b8e}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;min-height:100vh}
+main{max-width:760px;margin:0 auto;padding:20px 16px 40px}
+h1{margin:8px 0 4px;font-size:30px}h2{margin:22px 0 10px;font-size:18px}
+.mut{color:var(--mut);font-size:14px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:16px;margin:14px 0}
+button{font:inherit;cursor:pointer;border:0;border-radius:12px;padding:12px 20px;background:var(--card);color:var(--fg);border:1px solid var(--bd)}
+button:active{transform:scale(.97)}
+button.p{background:var(--pur);color:#fff;border-color:var(--pur);font-weight:600}
+button.big{font-size:20px;padding:16px 32px;width:100%}
+button.d{color:var(--red);border-color:var(--red);padding:6px 12px;font-size:14px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.row>*{flex:1}
+a.lnk{color:var(--pur);cursor:pointer;font-weight:600;text-decoration:underline}
+input[type=range]{width:100%;accent-color:var(--pur);height:28px}
+.rec{display:flex;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--bd)}
+.rec:last-child{border:0}.rec img{width:54px;height:40px;object-fit:cover;border-radius:8px;cursor:pointer;background:var(--purl)}
+.rec .t{flex:1;font-size:14px}
+#stage{position:relative;background:#000;border-radius:16px;overflow:hidden;height:min(62vh,560px);display:flex;align-items:center;justify-content:center}
+#stage img{max-width:100%;max-height:100%;object-fit:contain;transition:opacity .25s}
+#cap{min-height:34px;text-align:center;font-size:20px;font-weight:700;color:var(--pur);margin:12px 0 4px}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;text-align:center}
+.cal .dn{font-size:12px;color:var(--mut)}
+.cal button{padding:0;height:44px;border-radius:10px}
+.cal button.has{background:var(--pur);color:#fff;border-color:var(--pur);font-weight:700}
+.cal button.sel{outline:3px solid var(--fg);outline-offset:1px}
+.cal button.today{border:2px solid var(--pur)}
+.cal i{visibility:hidden}
+#modal{position:fixed;inset:0;background:rgba(0,0,0,.88);display:none;align-items:center;justify-content:center;flex-direction:column;gap:14px;z-index:9;padding:16px}
+#modal img{max-width:100%;max-height:80vh;border-radius:10px}
+#toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--fg);color:var(--bg);padding:10px 18px;border-radius:20px;display:none;z-index:10;font-size:14px;max-width:90vw}
+.big-t{font-size:56px;font-weight:800;color:var(--pur);text-align:center;margin:10px 0}
+.th{position:relative}.th button{position:absolute;top:3px;right:3px;z-index:2;padding:6px 11px;border-radius:8px;background:var(--card);cursor:pointer}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:8px}
+.grid img{width:100%;height:64px;object-fit:cover;border-radius:8px}
+</style>
+</head>
+<body>
+<main id="app"></main>
+<div id="modal"><img id="mimg" alt=""><button id="mclose" class="p">Закрыть</button></div>
+<div id="toast"></div>
+<script>
+const CAPS=["Ну что, ты собираешься кончать?","Давай, быстрее!","Дёргай быстрее!","Не тормози, красота же!","Ну же, не томи!","Ещё чуть-чуть, ты почти!","Ты уже на грани, да?","Жми, пока не поздно!","Терпеть больше нет сил, а?","Давай, не сдерживайся!","Ну всё, ты уже красный, признавайся!","Руки сами тянутся к кнопке, да?","Не стесняйся, тут все свои.","Ох, как же ты дышишь-то тяжело...","Давай-давай, финишная прямая!","Только не торопись... а нет, торопись!","Ты же хочешь, я вижу, как ты ёрзаешь.","Ещё одно такое фото, и ты не выдержишь.","Ну что, кнопка уже заждалась твоего нажатия.","Не держи в себе, нажми и расслабься.","Ммм, какая красота, да? Давай уже заканчивай.","Сколько можно мучить себя и кнопку?","Чувствуешь, как накатывает? Жми!","Быстрее, быстрее, а то пропустишь самое сладкое!"];
+let photos=[],db=null,assets=null,canEdit=false,dbState="loading";
+let view="home",interval=+ls("ss_int",5),bag=[],hist=[],caps=[],pos=-1,shown=0,timer=null,t0=0,calM=new Date(),calSel=null,pending=null;
+const $=s=>document.querySelector(s),app=$("#app");
+function ls(k,d){try{const v=localStorage.getItem(k);return v===null?d:JSON.parse(v)}catch(e){return d}}
+function lsSet(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+const recs=()=>ls("ss_rec",[]);
+function h(tag,props,...kids){const e=document.createElement(tag);for(const k in(props||{})){if(k==="on")for(const ev in props.on)e.addEventListener(ev,props.on[ev]);else if(k==="cls")e.className=props[k];else e.setAttribute(k,props[k])}kids.flat().forEach(c=>{if(c!=null)e.append(c.nodeType?c:document.createTextNode(c))});return e}
+function toast(m){const t=$("#toast");t.textContent=m;t.style.display="block";clearTimeout(toast.t);toast.t=setTimeout(()=>t.style.display="none",2200)}
+function fmtMs(ms){const s=Math.floor(ms/1000),m=Math.floor(s/60),c=Math.floor(ms%1000/10);return String(m).padStart(2,"0")+":"+String(s%60).padStart(2,"0")+"."+String(c).padStart(2,"0")}
+const dkey=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+const fmtDT=ts=>new Date(ts).toLocaleString("ru-RU",{day:"2-digit",month:"long",year:"numeric",hour:"2-digit",minute:"2-digit",second:"2-digit"});
+const urlOf=r=>{const p=photos.find(p=>p.id===r.pid);return p?p.url:r.url};
+function ask(msg,yes){const o=h("div",{style:"position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;z-index:20;padding:16px"},h("div",{cls:"card",style:"max-width:340px;margin:0"},h("div",{style:"margin-bottom:14px;font-weight:600"},msg),h("div",{cls:"row"},h("button",{on:{click:()=>o.remove()}},"Отмена"),h("button",{cls:"p",on:{click:()=>{o.remove();yes()}}},"Удалить"))));document.body.append(o)}
+function openPhoto(u){if(!u){toast("Фото недоступно");return}$("#mimg").src=u;$("#modal").style.display="flex"}
+$("#mclose").onclick=()=>$("#modal").style.display="none";
+$("#modal").onclick=e=>{if(e.target.id==="modal")$("#modal").style.display="none"};
+function go(v){clearTimeout(timer);view=v;render();window.scrollTo(0,0)}
+
+/* ---------- слайд-шоу ---------- */
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function draw(){const ids=photos.map(p=>p.id);bag=bag.filter(i=>ids.includes(i));
+  if(!bag.length){bag=shuffle(ids.slice());const last=hist[hist.length-1];if(bag.length>1&&bag[bag.length-1]===last){[bag[0],bag[bag.length-1]]=[bag[bag.length-1],bag[0]]}}
+  return bag.pop()}
+function start(){
+  if(!photos.length){toast(dbState==="loading"?"Фото ещё загружаются…":"Пока нет фотографий");return}
+  bag=[];hist=[];caps=[];pos=-1;shown=0;t0=Date.now();view="show";render();next(true)}
+function next(first){
+  if(pos<hist.length-1){pos++}else{hist.push(draw());shown++;caps.push(shown%3===0||shown%5===0?CAPS[Math.floor(Math.random()*CAPS.length)]:"");pos=hist.length-1}
+  showCur();}
+function prev(){if(pos>0){pos--;showCur()}else toast("Это первая фотография")}
+function showCur(){
+  const p=photos.find(p=>p.id===hist[pos]);const img=$("#simg");if(!img)return;
+  img.style.opacity=.2;img.onload=()=>img.style.opacity=1;img.src=p?p.url:"";
+  $("#cap").textContent=caps[pos]||"";$("#cnt").textContent="Фото №"+(pos+1);
+  clearTimeout(timer);timer=setTimeout(()=>next(),interval*1000)}
+function finish(){
+  clearTimeout(timer);const ms=Date.now()-t0,p=photos.find(p=>p.id===hist[pos]);
+  const r={id:String(Date.now()),ts:Date.now(),ms,pid:hist[pos],url:p?p.url:""};
+  const all=recs();all.push(r);lsSet("ss_rec",all);pending=r;view="result";render()}
+
+/* ---------- экраны ---------- */
+function render(){app.replaceChildren();({home,show,result,calendar}[view])()}
+function intervalBox(onch){
+  const lab=h("b",null,interval+" с");
+  const s=h("input",{type:"range",min:1,max:60,step:1,value:interval,"aria-label":"Интервал"});
+  s.addEventListener("input",()=>{interval=+s.value;lab.textContent=interval+" с";lsSet("ss_int",interval);onch&&onch()});
+  return h("div",null,h("div",{cls:"row",style:"justify-content:space-between"},h("span",null,"Интервал смены фото"),lab),s,h("div",{cls:"row mut",style:"justify-content:space-between"},h("span",null,"1 с"),h("span",{style:"text-align:right"},"1 мин")))}
+function home(){
+  const n=photos.length;
+  app.append(h("h1",null,"Фото-слайдшоу"),
+    h("div",{cls:"mut"},dbState==="loading"?"Загружаю фотографии…":dbState==="none"?"Не удалось загрузить список фотографий. Обновите страницу.":"Фотографий в коллекции: "+n),
+    h("div",{cls:"card"},intervalBox(),h("div",{style:"height:14px"}),h("button",{cls:"p big",on:{click:start}},"Начать")),
+    h("div",{cls:"card"},h("a",{cls:"lnk",on:{click:()=>{calM=new Date();calSel=null;go("calendar")}}},"📅 Открыть календарь"),
+      h("h2",null,"Последние записи секундомера"),
+      (()=>{const r=recs().slice(-5).reverse();return r.length?h("div",null,r.map(x=>h("div",{cls:"rec"},h("img",{src:urlOf(x),alt:"",on:{click:()=>openPhoto(urlOf(x))}}),h("div",{cls:"t"},fmtDT(x.ts)),h("b",null,fmtMs(x.ms)))) ):h("div",{cls:"mut"},"Пока пусто — запусти слайд-шоу и нажми «Кончить».")})()));
+  }
+function show(){
+  app.append(h("div",{cls:"row",style:"justify-content:space-between;flex:none"},h("span",{id:"cnt",cls:"mut"}),h("button",{style:"flex:none",on:{click:()=>go("home")}},"Выйти")),
+    h("div",{id:"stage"},h("img",{id:"simg",alt:"Фото"})),h("div",{id:"cap"}),
+    h("button",{on:{click:prev},style:"width:100%"},"← Назад"),
+    h("div",{style:"height:10px"}),h("button",{cls:"p big",on:{click:finish}},"Кончить"))}
+function result(){
+  const r=pending;
+  app.append(h("h1",null,"Готово! 🎉"),h("div",{cls:"mut"},"Фото закреплено в календаре"),h("div",{cls:"big-t"},fmtMs(r.ms)),
+    h("div",{cls:"card"},h("img",{src:r.url,alt:"",style:"width:100%;border-radius:12px;cursor:pointer",on:{click:()=>openPhoto(r.url)}}),h("div",{cls:"mut"},fmtDT(r.ts))),
+    h("div",{cls:"row"},h("button",{cls:"p",on:{click:()=>go("home")}},"На главную"),h("button",{on:{click:()=>{calM=new Date(r.ts);calSel=dkey(new Date(r.ts));go("calendar")}}},"Открыть календарь")))}
+function calendar(){
+  const all=recs(),days=new Set(all.map(r=>dkey(new Date(r.ts)))),y=calM.getFullYear(),m=calM.getMonth();
+  const first=new Date(y,m,1),off=(first.getDay()+6)%7,dim=new Date(y,m+1,0).getDate(),today=dkey(new Date());
+  const cells=["Пн","Вт","Ср","Чт","Пт","Сб","Вс"].map(d=>h("div",{cls:"dn"},d));
+  for(let i=0;i<off;i++)cells.push(h("i"));
+  for(let d=1;d<=dim;d++){const k=y+"-"+String(m+1).padStart(2,"0")+"-"+String(d).padStart(2,"0");
+    cells.push(h("button",{cls:(days.has(k)?"has ":"")+(k===calSel?"sel ":"")+(k===today?"today":""),on:{click:()=>{calSel=k;render()}}},String(d)))}
+  const title=first.toLocaleDateString("ru-RU",{month:"long",year:"numeric"});
+  const shift=n=>()=>{calM=new Date(y,m+n,1);calSel=null;render()};
+  const list=calSel?all.filter(r=>dkey(new Date(r.ts))===calSel).sort((a,b)=>a.ts-b.ts):[];
+  app.append(h("button",{on:{click:()=>go("home")}},"← На главную"),h("h1",null,"Календарь"),
+    h("div",{cls:"card"},h("div",{cls:"row",style:"justify-content:space-between;margin-bottom:12px"},h("button",{style:"flex:none",on:{click:shift(-1)},"aria-label":"Предыдущий месяц"},"‹"),h("b",{style:"text-transform:capitalize;text-align:center"},title),h("button",{style:"flex:none",on:{click:shift(1)},"aria-label":"Следующий месяц"},"›")),
+      h("div",{cls:"cal"},cells),h("div",{cls:"mut",style:"margin-top:10px"},"Фиолетовым отмечены дни с записями.")),
+    h("div",{cls:"card"},h("h2",{style:"margin-top:0"},calSel?"Записи за "+calSel.split("-").reverse().join("."):"Выбери день"),
+      calSel&&!list.length?h("div",{cls:"mut"},"В этот день записей нет."):null,
+      list.map(r=>h("div",{cls:"rec"},h("img",{src:urlOf(r),alt:"",on:{click:()=>openPhoto(urlOf(r))}}),
+        h("div",{cls:"t"},new Date(r.ts).toLocaleTimeString("ru-RU"),h("br"),h("b",null,"⏱ "+fmtMs(r.ms))),
+        h("button",{on:{click:()=>openPhoto(urlOf(r))}},"Открыть"),
+        h("button",{cls:"d",on:{click:()=>ask("Удалить эту запись?",()=>{lsSet("ss_rec",recs().filter(x=>x.id!==r.id));render();toast("Запись удалена")})}},"Удалить")))))}
+
+/* ---------- список фото из папки photos репозитория ---------- */
+async function listNames(){
+  try{const c=sessionStorage.getItem("ss_list");if(c)return JSON.parse(c)}catch(e){}
+  let names=null;
+  try{const o=location.hostname.split(".")[0];let rp=location.pathname.split("/")[1]||"";if(!rp||/\.html?$/.test(rp))rp=location.hostname;
+    const r=await fetch("https://api.github.com/repos/"+o+"/"+rp+"/contents/photos");
+    if(r.ok){const j=await r.json();names=j.filter(f=>f.type==="file").map(f=>f.name)}}catch(e){}
+  if(!names){try{const r=await fetch("photos.json",{cache:"no-cache"});if(r.ok){const j=await r.json();if(Array.isArray(j))names=j}}catch(e){}}
+  if(names){names=names.filter(n=>/\.(jpe?g|png|webp|gif|avif)$/i.test(n)).sort();try{sessionStorage.setItem("ss_list",JSON.stringify(names))}catch(e){}}
+  return names}
+async function init(){
+  render();
+  const names=await listNames();
+  if(!names){dbState="none"}else{photos=names.map(n=>({id:n,url:"photos/"+encodeURIComponent(n),ts:0}));dbState="ok"}
+  if(view==="home")render()}
+init();
+</script>
+</body>
+</html>
