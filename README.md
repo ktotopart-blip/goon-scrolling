@@ -1,4 +1,4 @@
-# 📸 Гун-скроллинг / Goon-Scrolling
+# 📸 Гун-скроллинг 2000 / Goon-Scrolling 2000
 
 [Русский](#русский) · [English](#english)
 
