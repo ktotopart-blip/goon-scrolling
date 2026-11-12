@@ -14,10 +14,16 @@ async function shareRec(r){
       if(navigator.canShare({files:[f]})){await navigator.share({files:[f],title:"Goon-scrolling 2000",text:head+"\n"+site});return}}
   }catch(e){if(e&&e.name==="AbortError")return}
   try{await navigator.share({title:"Goon-scrolling 2000",text:head+(photo?". Вот на какое фото: "+photo:""),url:site})}catch(e){if(!e||e.name!=="AbortError")copy(full)}}
-function openPhoto(u,r){if(!u){toast("Фото недоступно");return}const im=$("#mimg"),cv=$("#mcv");im.onload=()=>paintSplash(cv,im,r);im.src=u;$("#modal").style.display="flex";if(im.complete)paintSplash(cv,im,r)}
-$("#mclose").onclick=()=>$("#modal").style.display="none";
-$("#modal").onclick=e=>{if(e.target.id==="modal")$("#modal").style.display="none"};
-function go(v){exitFs();gameStop();clearTimeout(timer);musicStop();finishing=false;view=v;render();window.scrollTo(0,0)}
+function openPhoto(u,r){if(!u){toast("Фото недоступно");return}const im=$("#mimg"),cv=$("#mcv");im.onload=()=>paintSplash(cv,im,r);im.src=u;$("#modal").style.display="flex";pushV(view,{m:1});if(im.complete)paintSplash(cv,im,r)}
+function hideModal(){$("#modal").style.display="none"}
+function closeModal(){const H=hs();if(H&&H.state&&H.state.m)H.back();else hideModal()}
+$("#mclose").onclick=closeModal;$("#modal").onclick=e=>{if(e.target.id==="modal")closeModal()};
+function leave(){exitFs();gameStop();clearTimeout(timer);musicStop();finishing=false}
+function go(v){leave();if(v==="home"&&view!=="home"&&hd()>0){hs().back();return}if(v!=="home")pushV(v);view=v;render();window.scrollTo(0,0)}
+addEventListener("popstate",e=>{
+  if(typeof bossEl!=="undefined"&&bossEl){closeBoss();return}
+  const md=$("#modal");if(md&&md.style.display==="flex"){hideModal();return}
+  const v=e.state&&e.state.v;leave();view=["calendar","records","stats","ach","settings"].includes(v)?v:"home";render();window.scrollTo(0,0)});
 
 /* ---------- слайд-шоу ---------- */
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
@@ -26,7 +32,7 @@ function draw(){const ids=photos.map(p=>p.id);bag=bag.filter(i=>ids.includes(i))
   return bag.pop()}
 function start(){
   if(!photos.length){toast(dbState==="loading"?"Фото ещё загружаются…":"Пока нет фотографий");return}
-  bag=[];hist=[];caps=[];pos=-1;shown=0;finishing=false;t0=Date.now();view="show";render();musicStart();gameStart();next(true)}
+  bag=[];hist=[];caps=[];pos=-1;shown=0;finishing=false;t0=Date.now();view="show";pushV("show");render();musicStart();gameStart();next(true)}
 function next(first){
   if(pos<hist.length-1){pos++}else{hist.push(draw());shown++;caps.push(shown%3===0||shown%5===0?pick(PH().c):"");pos=hist.length-1;gameNew()}
   showCur();}
@@ -43,7 +49,7 @@ function finish(){
   const r={id:String(Date.now()),ts:Date.now(),ms,pid:hist[pos],url:p?p.url:"",seed:(Math.random()*1e9|0)+1,fx:true};
   r.ph=pick(PH().f);gameMark(r);const had=ACH.map(x=>x[2](recs()));const all=recs();all.push(r);lsSet(RK,all);newAch=ACH.map((x,i)=>i).filter(i=>!had[i]&&ACH[i][2](all));pending=r;const S=mkSplats(r.seed);
   const st=$("#stage"),im=$("#simg"),cv=h("canvas",{cls:"spl"}),bb=$("#bar");if(bb)bb.style.animation="none";st.append(cv);setTimeout(()=>{if(view==="show")st.append(h("div",{id:"fin"},r.ph))},900);
-  splash(cv,im,S,()=>setTimeout(()=>{if(view==="show"){finishing=false;exitFs();view="result";render()}},RM?1500:1500))}
+  splash(cv,im,S,()=>setTimeout(()=>{if(view==="show"){finishing=false;exitFs();replV("result");view="result";render()}},RM?1500:1500))}
 
 /* ---------- экраны ---------- */
 function render(){app.replaceChildren();({home,show,result,calendar,records,stats,ach,settings}[view])()}
@@ -101,7 +107,7 @@ function ach(){const a=recs(),ok=ACH.map(x=>x[2](a));page("Достижения"
 function modeBox(){const R=fem?[["d","Доминантный"],["s","Послушный"]]:[["n","Обычный"],["d","Доминантная"],["s","Послушная"]],u=location.origin+location.pathname+(fem?"":"?mode=f");
   return h("div",{cls:"card"},h("h2",null,fem?"Голос: мужчина":"Голос: девушка"),h("div",{cls:"mut",style:"margin-bottom:10px"},"От чьего лица звучат подписи"),
     h("div",{cls:"row"},R.map(([k,l])=>h("button",{cls:role===k?"p":"",on:{click:()=>{role=k;lsSet("ss_role_"+(fem?"f":"m"),k);render()}}},l))),
-    h("div",{style:"height:10px"}),h("button",{style:"width:100%",on:{click:()=>window.open(u,"_blank","noopener")}},fem?"Открыть режим для парней ↗":"Открыть режим для девушек ↗"))}
+    h("div",{style:"height:10px"}),h("button",{style:"width:100%",on:{click:()=>{location.href=u}}},fem?"Перейти в режим для парней":"Перейти в режим для девушек"))}
 function calendar(){
   const all=recs(),days=new Set(all.map(r=>dkey(new Date(r.ts)))),y=calM.getFullYear(),m=calM.getMonth();
   const first=new Date(y,m,1),off=(first.getDay()+6)%7,dim=new Date(y,m+1,0).getDate(),today=dkey(new Date());
@@ -143,6 +149,7 @@ async function listAudio(){
   return names||[]}
 function ageGate(){if(ls("ss_18",false))return;const o=h("div",{id:"gate"},h("div",{cls:"card",style:"max-width:380px;text-align:center"},h("h1",null,"18+"),h("p",null,"Сайт содержит шуточный контент для взрослых. Вам есть 18 лет?"),h("button",{cls:"p big",on:{click:()=>{lsSet("ss_18",true);o.remove()}}},"Мне есть 18"),h("div",{style:"height:10px"}),h("button",{style:"width:100%",on:{click:()=>{location.href="https://ru.wikipedia.org"}}},"Мне нет 18")));document.body.append(o)}
 async function init(){
+  {const st=hs()&&history.state;if(st&&["calendar","records","stats","ach","settings"].includes(st.v))view=st.v;else replV("home")}
   ageGate();if("serviceWorker" in navigator&&/^https?:/.test(location.protocol))navigator.serviceWorker.register("sw.js").catch(()=>{});
   render();
   const [names,anames]=await Promise.all([listNames(),listAudio()]);

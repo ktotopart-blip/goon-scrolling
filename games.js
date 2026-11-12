@@ -26,7 +26,7 @@ function gameCanFinish(){if(gm==="p"&&Date.now()<lockEnd){toast(pick(TEASE));con
 function gameMark(r){if(gm==="c"){r.g="c";r.dur=gdur;r.lost=true}else if(gm==="p")r.g="p"}
 const resTitle=r=>r.win?(fem?"Выдержала!":"Выдержал!"):r.lost?(fem?"Не выдержала":"Не выдержал"):"Готово";
 function winChallenge(){if(finishing||view!=="show")return;gameStop();clearTimeout(timer);musicStop();const p=photos.find(p=>p.id===hist[pos]),r={id:String(Date.now()),ts:Date.now(),ms:Date.now()-t0,pid:hist[pos],url:p?p.url:"",seed:0,fx:false,g:"c",dur:gdur,win:true,ph:pick(fem?WINF:WINM)};
-  const had=ACH.map(x=>x[2](recs())),all=recs();all.push(r);lsSet(RK,all);newAch=ACH.map((x,i)=>i).filter(i=>!had[i]&&ACH[i][2](all));pending=r;exitFs();view="result";render()}
+  const had=ACH.map(x=>x[2](recs())),all=recs();all.push(r);lsSet(RK,all);newAch=ACH.map((x,i)=>i).filter(i=>!had[i]&&ACH[i][2](all));pending=r;exitFs();replV("result");view="result";render()}
 function cmdShow(t){const e=$("#cmd");if(!e)return;e.textContent=t;e.classList.remove("on");void e.offsetWidth;e.classList.add("on")}
 function gameNew(){if(gm!=="k")return;
   if(gs.n>0){gs.n--;if(!gs.n)gs.mode="";return}
@@ -39,7 +39,8 @@ function boss(){if(bossEl){unboss();return}
   for(let r=1;r<=26;r++)rows.push(h("tr",null,h("th",null,String(r)),...cols.map((c,i)=>h("td",null,i===0?names[r%6]:String(1000+(r*37+i*91)%9000)))));
   bossEl=h("div",{id:"boss"},h("div",{cls:"t",on:{dblclick:unboss}},"Квартальный отчёт 2026.xlsx — Таблицы"),h("div",{cls:"tb"},"Файл   Правка   Вид   Вставка   Формат   Данные   Инструменты"),
     h("table",null,h("tr",null,h("th"),...cols.map(c=>h("th",null,c))),...rows),h("button",{cls:"x",on:{click:unboss}},"↩ Вернуться"));
-  document.body.append(bossEl)}
-function unboss(){if(!bossEl)return;bossEl.remove();bossEl=null;document.title=bossTitle;
+  document.body.append(bossEl);pushV(view,{boss:1})}
+function unboss(){if(!bossEl)return;const H=hs();if(H&&H.state&&H.state.boss){H.back();return}closeBoss()}
+function closeBoss(){if(!bossEl)return;bossEl.remove();bossEl=null;document.title=bossTitle;
   if(bossT){const d=Date.now()-bossT;bossT=0;t0+=d;gEnd+=d;lockEnd+=d;if(view==="show"&&!finishing){showCur();if(apl.length)audioEl.play().catch(()=>{})}}}
 addEventListener("keydown",e=>{if(e.code==="KeyB"&&!e.ctrlKey&&!e.metaKey&&!e.altKey&&!/INPUT|TEXTAREA/.test((e.target&&e.target.tagName)||""))boss()});

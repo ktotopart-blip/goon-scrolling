@@ -15,3 +15,7 @@ const dkey=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+Str
 const fmtDT=ts=>new Date(ts).toLocaleString("ru-RU",{day:"2-digit",month:"long",year:"numeric",hour:"2-digit",minute:"2-digit",second:"2-digit"});
 const urlOf=r=>{const p=photos.find(p=>p.id===r.pid);return p?p.url:r.url};
 const QF=()=>({high:{g:300,d:2,p:1},medium:{g:190,d:1.5,p:.5},low:{g:110,d:1,p:.2}}[ls("ss_q","high")]||{g:300,d:2,p:1});
+/* история браузера: кнопка «Назад» */
+const hs=()=>typeof history!=="undefined"&&history.pushState?history:null,hd=()=>{const H=hs();return H&&H.state&&H.state.d||0};
+function pushV(v,x){const H=hs();if(H)try{H.pushState(Object.assign({v,d:hd()+1},x||{}),"")}catch(e){}}
+function replV(v){const H=hs();if(H)try{H.replaceState({v,d:hd()},"")}catch(e){}}
