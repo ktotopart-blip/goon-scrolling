@@ -17,7 +17,7 @@ async function shareRec(r){
 function openPhoto(u,r){if(!u){toast("Фото недоступно");return}const im=$("#mimg"),cv=$("#mcv");im.onload=()=>paintSplash(cv,im,r);im.src=u;$("#modal").style.display="flex";if(im.complete)paintSplash(cv,im,r)}
 $("#mclose").onclick=()=>$("#modal").style.display="none";
 $("#modal").onclick=e=>{if(e.target.id==="modal")$("#modal").style.display="none"};
-function go(v){clearTimeout(timer);musicStop();finishing=false;view=v;render();window.scrollTo(0,0)}
+function go(v){exitFs();clearTimeout(timer);musicStop();finishing=false;view=v;render();window.scrollTo(0,0)}
 
 /* ---------- слайд-шоу ---------- */
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
@@ -43,7 +43,7 @@ function finish(){
   const r={id:String(Date.now()),ts:Date.now(),ms,pid:hist[pos],url:p?p.url:"",seed:(Math.random()*1e9|0)+1,fx:true};
   r.ph=pick(PH().f);const had=ACH.map(x=>x[2](recs()));const all=recs();all.push(r);lsSet(RK,all);newAch=ACH.map((x,i)=>i).filter(i=>!had[i]&&ACH[i][2](all));pending=r;const S=mkSplats(r.seed);
   const st=$("#stage"),im=$("#simg"),cv=h("canvas",{cls:"spl"}),bb=$("#bar");if(bb)bb.style.animation="none";st.append(cv);setTimeout(()=>{if(view==="show")st.append(h("div",{id:"fin"},r.ph))},900);
-  splash(cv,im,S,()=>setTimeout(()=>{if(view==="show"){finishing=false;view="result";render()}},RM?1500:1500))}
+  splash(cv,im,S,()=>setTimeout(()=>{if(view==="show"){finishing=false;exitFs();view="result";render()}},RM?1500:1500))}
 
 /* ---------- экраны ---------- */
 function render(){app.replaceChildren();({home,show,result,calendar,records,stats,ach,settings}[view])()}
@@ -73,11 +73,15 @@ function home(){
       h("h2",null,"Последние записи секундомера"),
       (()=>{const r=recs().slice(-5).reverse();return r.length?h("div",null,r.map(x=>h("div",{cls:"rec"},withSplash(x,"",()=>openPhoto(urlOf(x),x)),h("div",{cls:"t"},fmtDT(x.ts)),h("b",null,fmtMs(x.ms)))) ):h("div",{cls:"mut"},"Пока пусто — запусти слайд-шоу и нажми «Кончить».")})()));
   }
+function exitFs(){const sv=$("#sv");if(sv)sv.classList.remove("fs");const b=$("#fsb");if(b)b.textContent="На весь экран";if(document.fullscreenElement&&document.exitFullscreen)document.exitFullscreen().catch(()=>{})}
+function toggleFs(){const sv=$("#sv");if(!sv)return;if(sv.classList.contains("fs")){exitFs();return}
+  sv.classList.add("fs");$("#fsb").textContent="Свернуть";const rq=sv.requestFullscreen||sv.webkitRequestFullscreen;if(rq)try{const p=rq.call(sv);if(p&&p.catch)p.catch(()=>{})}catch(e){}}
+document.addEventListener("fullscreenchange",()=>{if(!document.fullscreenElement)exitFs()});
 function show(){
-  app.append(h("div",{cls:"row",style:"justify-content:space-between;flex:none"},h("span",{id:"cnt",cls:"mut"}),h("button",{style:"flex:none",on:{click:()=>go("home")}},"Выйти")),
+  app.append(h("div",{id:"sv"},h("div",{cls:"row",style:"justify-content:space-between;flex:none"},h("span",{id:"cnt",cls:"mut"}),h("button",{id:"fsb",style:"flex:none",on:{click:toggleFs}},"На весь экран"),h("button",{style:"flex:none",on:{click:()=>go("home")}},"Выйти")),
     h("div",{id:"stage"},h("img",{id:"simg",alt:"Фото"}),h("div",{id:"bar"})),h("div",{id:"cap"}),
     h("button",{on:{click:prev},style:"width:100%"},"← Назад"),
-    h("div",{style:"height:10px"}),h("button",{cls:"p big",on:{click:finish}},"Кончить"))}
+    h("div",{style:"height:10px"}),h("button",{cls:"p big",on:{click:finish}},"Кончить")))}
 function result(){
   const r=pending;blobOf(r);if(newAch.length){const m=newAch.map(i=>AN(i)[2]+" "+AN(i)[0]).join(", ");newAch=[];setTimeout(()=>toast("Достижение: "+m),700)}
   app.append(h("h1",null,"Готово"),h("div",{cls:"mut"},"Фото закреплено в календаре"),h("div",{cls:"phr"},r.ph||""),h("div",{cls:"big-t"},fmtMs(r.ms)),

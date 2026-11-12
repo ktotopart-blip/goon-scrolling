@@ -8,7 +8,8 @@ function ls(k,d){try{const v=localStorage.getItem(k);return v===null?d:JSON.pars
 function lsSet(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
 const recs=()=>ls(RK,[]);
 function h(tag,props,...kids){const e=document.createElement(tag);for(const k in(props||{})){if(k==="on")for(const ev in props.on)e.addEventListener(ev,props.on[ev]);else if(k==="cls")e.className=props[k];else e.setAttribute(k,props[k])}kids.flat().forEach(c=>{if(c!=null)e.append(c.nodeType?c:document.createTextNode(c))});return e}
-function toast(m){const t=$("#toast");t.textContent=m;t.style.display="block";clearTimeout(toast.t);toast.t=setTimeout(()=>t.style.display="none",2200)}
+const TT=$("#toast");
+function toast(m){const t=TT,host=document.fullscreenElement||document.body;if(t.parentNode!==host)host.append(t);t.textContent=m;t.style.display="block";clearTimeout(toast.t);toast.t=setTimeout(()=>t.style.display="none",2200)}
 function fmtMs(ms){const s=Math.floor(ms/1000),m=Math.floor(s/60),c=Math.floor(ms%1000/10);return String(m).padStart(2,"0")+":"+String(s%60).padStart(2,"0")+"."+String(c).padStart(2,"0")}
 const dkey=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
 const fmtDT=ts=>new Date(ts).toLocaleString("ru-RU",{day:"2-digit",month:"long",year:"numeric",hour:"2-digit",minute:"2-digit",second:"2-digit"});

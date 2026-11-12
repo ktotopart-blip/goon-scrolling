@@ -1,4 +1,4 @@
-const V="goon-v1",M="goon-media",SHELL=["./","index.html","style.css","core.js","data.js","fx.js","settings.js","app.js","manifest.webmanifest","icon-192.png"];
+const V="goon-v1",M="goon-media",SHELL=["./","index.html","style.css","core.js","data.js","phrases.js","fx.js","settings.js","app.js","manifest.webmanifest","icon-192.png"];
 self.addEventListener("install",e=>{e.waitUntil(caches.open(V).then(c=>c.addAll(SHELL)).then(()=>self.skipWaiting()))});
 self.addEventListener("activate",e=>{e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(x=>x!==V&&x!==M).map(x=>caches.delete(x)))).then(()=>self.clients.claim()))});
 self.addEventListener("fetch",e=>{const r=e.request,u=new URL(r.url);
