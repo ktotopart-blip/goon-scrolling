@@ -6,7 +6,7 @@
 
 ## Русский
 
-Слайдшоу с фотографиями, шуточными подписями, скрытым секундомером, календарём, статистикой и достижениями. Сайт работает прямо в браузере.
+Слайдшоу с фотографиями, интересными подписями, скрытым секундомером, календарём, статистикой и достижениями. Сайт работает прямо в браузере.
 
 ### Как пользоваться
 
@@ -25,9 +25,13 @@
 - **Календарь.** Дни с записями выделены фиолетовым, можно листать месяцы, открывать закреплённые фото и удалять записи. У каждой записи есть переключатель **«Брызги»**, который включает и выключает жидкость на её фото.
 - **Рекорды.** Пять самых быстрых и пять самых долгих сессий.
 - **Статистика.** Всего записей, за сегодня, за 7 дней, среднее и общее время, лучшее время, график последних 7 дней, любимое фото.
-- **Достижения.** Семь значков за разные сессии (быстрые, долгие, ночные, серии дней и другие). При получении нового достижения появляется сообщение.
+- **Достижения.** 27 значков за разные сессии (быстрые, долгие, ночные, серии дней, число записей и другие). При получении нового достижения появляется сообщение.
 - **Поделиться.** Отправляет фото и результат секундомера друзьям. На телефоне открывается системное меню, на компьютере копируется текст со ссылкой.
 - **Оформление.** Тёмная и светлая тема в зависимости от настроек устройства, плавающие частицы. Анимации отключаются, если в системе включено «уменьшить движение».
+
+### Режим для девушек
+
+На главной странице кнопка **«Открыть режим для девушек ↗»** открывает сайт в новой вкладке. Функции те же, но вместо белой жидкости брызгает вода, подписи звучат в женском роде, а достижения имеют свои названия. Фото берутся из папки `photos_f`, музыка из `audio_f`. Календарь и записи в этом режиме хранятся отдельно. Блок **«Голос»** переключает, от чьего лица звучат подписи: в обычном режиме это девушка (обычная, доминантная или послушная), в режиме для девушек это мужчина (доминантный или послушный).
 
 ### Ваши данные
 
@@ -45,7 +49,7 @@
 
 ## English
 
-A photo slideshow with playful captions, a hidden stopwatch, a calendar, statistics and achievements. The site runs entirely in your browser.
+A photo slideshow with interesting captions, a hidden stopwatch, a calendar, statistics and achievements. The site runs entirely in your browser.
 
 ### How to use
 
@@ -64,9 +68,13 @@ A photo slideshow with playful captions, a hidden stopwatch, a calendar, statist
 - **Calendar.** Days with entries are highlighted in purple; you can browse months, reopen pinned photos and delete entries. Each entry has a **"Брызги"** (Splash) switch that turns the liquid on or off for that photo.
 - **Records.** The five fastest and five longest sessions.
 - **Statistics.** Total entries, today, last 7 days, average and total time, best time, a 7-day chart, favorite photo.
-- **Achievements.** Seven badges for different sessions (fast, long, late-night, day streaks and more). A message appears when you unlock a new one.
+- **Achievements.** 27 badges for different sessions (fast, long, late-night, day streaks, number of entries and more). A message appears when you unlock a new one.
 - **Share.** Sends the photo and stopwatch result to friends. On phones it opens the system share sheet; on desktop it copies text with a link.
 - **Look and feel.** Dark and light themes following your device settings, floating particles. Animations are turned off if "reduce motion" is enabled in your system.
+
+### Mode for girls
+
+The **"Открыть режим для девушек ↗"** button on the home page opens the site in a new tab. The functions are the same, but water sprays instead of white liquid, captions use feminine forms, and achievements have their own names. Photos come from the `photos_f` folder, music from `audio_f`. The calendar and records of this mode are stored separately. The **"Голос"** (Voice) block chooses who is speaking in the captions: in the regular mode it is a girl (regular, dominant or submissive), in the mode for girls it is a man (dominant or submissive).
 
 ### Your data
 
