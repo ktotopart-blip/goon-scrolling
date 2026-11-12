@@ -47,6 +47,8 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border:0;border-radiu
 #bar{position:absolute;left:0;bottom:0;height:3px;width:100%;background:var(--lil);transform-origin:left;transform:scaleX(0)}
 @keyframes bar{from{transform:scaleX(0)}to{transform:scaleX(1)}}
 .spl{position:absolute;pointer-events:none}
+#mw{position:relative;line-height:0;max-width:100%}
+.rec .pw{width:58px;height:42px;flex:none}.rec .pw img{height:100%;object-fit:cover;border-radius:10px}
 .pw{position:relative;line-height:0}.pw img{width:100%;border-radius:16px;cursor:pointer}
 #cap{min-height:44px;text-align:center;font:500 clamp(15px,4vw,19px)/1.3 var(--fd);color:var(--lil);margin:16px 0 8px}
 .cal{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;text-align:center}
@@ -65,7 +67,7 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border:0;border-radiu
 </head>
 <body>
 <main id="app"></main>
-<div id="modal"><img id="mimg" alt=""><button id="mclose" class="p">Закрыть</button></div>
+<div id="modal"><div id="mw"><img id="mimg" alt=""><canvas id="mcv" class="spl"></canvas></div><button id="mclose" class="p">Закрыть</button></div>
 <div id="toast"></div>
 <script>
 const CAPS=["Ну что, ты собираешься кончать?","Давай, быстрее!","Дёргай быстрее!","Не тормози, красота же!","Ну же, не томи!","Ещё чуть-чуть, ты почти!","Ты уже на грани, да?","Жми, пока не поздно!","Терпеть больше нет сил, а?","Давай, не сдерживайся!","Ну всё, ты уже красный, признавайся!","Руки сами тянутся к кнопке, да?","Не стесняйся, тут все свои.","Ох, как же ты дышишь-то тяжело...","Давай-давай, финишная прямая!","Только не торопись... а нет, торопись!","Ты же хочешь, я вижу, как ты ёрзаешь.","Ещё одно такое фото, и ты не выдержишь.","Ну что, кнопка уже заждалась твоего нажатия.","Не держи в себе, нажми и расслабься.","Ммм, какая красота, да? Давай уже заканчивай.","Сколько можно мучить себя и кнопку?","Чувствуешь, как накатывает? Жми!","Быстрее, быстрее, а то пропустишь самое сладкое!"];
@@ -97,7 +99,7 @@ async function shareRec(r){
       if(navigator.canShare({files:[f]})){await navigator.share({files:[f],title:"Goon-scrolling 2000",text:head+"\n"+site});return}}
   }catch(e){if(e&&e.name==="AbortError")return}
   try{await navigator.share({title:"Goon-scrolling 2000",text:head+(photo?". Вот на какое фото: "+photo:""),url:site})}catch(e){if(!e||e.name!=="AbortError")copy(full)}}
-function openPhoto(u){if(!u){toast("Фото недоступно");return}$("#mimg").src=u;$("#modal").style.display="flex"}
+function openPhoto(u,r){if(!u){toast("Фото недоступно");return}const im=$("#mimg"),cv=$("#mcv");im.onload=()=>paintSplash(cv,im,r);im.src=u;$("#modal").style.display="flex";if(im.complete)paintSplash(cv,im,r)}
 $("#mclose").onclick=()=>$("#modal").style.display="none";
 $("#modal").onclick=e=>{if(e.target.id==="modal")$("#modal").style.display="none"};
 function go(v){clearTimeout(timer);musicStop();finishing=false;view=v;render();window.scrollTo(0,0)}
@@ -112,21 +114,42 @@ const RM=matchMedia("(prefers-reduced-motion:reduce)").matches;
     if(!RM)requestAnimationFrame(tick)}
   addEventListener("resize",sz);sz();tick()})();
 /* ---------- эффект брызг ---------- */
-function mkSplats(){return Array.from({length:14},(_,i)=>{const big=i<2;return{x:.08+Math.random()*.84,y:.08+Math.random()*.84,r:big?.09+Math.random()*.04:.025+Math.random()*.05,d:Math.random()*.25,k:Math.random()*6.28,ox:Math.random()<.5?-.1:1.1,oy:.5+Math.random()*.6,arch:.25+Math.random()*.4,
-  rd:Array.from({length:12},()=>.75+Math.random()*.5),sat:Array.from({length:3+Math.floor(Math.random()*5)},()=>({a:Math.random()*6.28,d:1.3+Math.random()*1.3,r:.12+Math.random()*.18})),dr:Math.random()<.7?{dx:(Math.random()-.5)*.8,l:.04+Math.random()*.1}:null}})}
-function blobPath(c,X,Y,R,s,e){const n=s.rd.length,p=[];for(let i=0;i<n;i++){const a=i/n*6.283+s.k,r=R*s.rd[i]*e;p.push({x:X+Math.cos(a)*r,y:Y+Math.sin(a)*r*.92})}
-  c.beginPath();c.moveTo((p[0].x+p[n-1].x)/2,(p[0].y+p[n-1].y)/2);for(let i=0;i<n;i++){const a=p[i],b=p[(i+1)%n];c.quadraticCurveTo(a.x,a.y,(a.x+b.x)/2,(a.y+b.y)/2)}c.closePath()}
-function drawSplats(c,w,h,S,t){const cl=(v)=>Math.max(0,Math.min(1,v));
-  for(const s of S){const f=cl((t-s.d)/.25),g=cl((t-s.d-.25)/.2),e=1-Math.pow(1-g,3),R=s.r*w,X=s.x*w,Y=s.y*h;
-    if(g===0){if(f>0){const q=f,px=s.ox*w+(X-s.ox*w)*q,py=s.oy*h+(Y-s.oy*h)*q-4*s.arch*h*q*(1-q);c.fillStyle="#fff";c.beginPath();c.arc(px,py,R*.3,0,6.283);c.fill()}continue}
-    if(s.dr){const dp=cl((t-s.d-.3)/.45),x2=X+s.dr.dx*R,y2=Y+R*.3+s.dr.l*h*dp;c.strokeStyle="#fff";c.lineCap="round";c.lineWidth=R*.3;c.beginPath();c.moveTo(x2,Y+R*.2);c.lineTo(x2,y2);c.stroke();c.fillStyle="#fff";c.beginPath();c.arc(x2,y2,R*.22,0,6.283);c.fill()}
-    blobPath(c,X+R*.06,Y+R*.1,R,s,e);c.fillStyle="rgba(196,206,232,.95)";c.fill();
-    blobPath(c,X,Y,R*.93,s,e);c.fillStyle="#fff";c.fill();
-    c.fillStyle="#fff";for(const a of s.sat){c.beginPath();c.arc(X+Math.cos(a.a)*a.d*R*e,Y+Math.sin(a.a)*a.d*R*e,a.r*R*e,0,6.283);c.fill()}}}
+function rng(a){return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function mkSplats(seed){const R=rng(seed||1);return Array.from({length:15},(_,i)=>{const y=.1+R()*.8;return{x:.1+R()*.8,y,r:i<3?.07+R()*.04:.02+R()*.035,d:R()*.3,ox:R()<.5?-.15:1.15,oy:y+.5+R()*.5,arch:.2+R()*.35,L:.8+R()*1.6,
+  w:Array.from({length:7},()=>R()),sat:Array.from({length:3+(R()*5|0)},()=>({o:(R()-.5)*1.8,d:1.5+R()*2.2,r:.1+R()*.17,s:R()<.5})),dr:Array.from({length:R()*3|0},()=>({dx:(R()-.5)*1.2,l:.05+R()*.16}))}})}
+const cl=v=>Math.max(0,Math.min(1,v)),sm=(a,b,x)=>{x=cl((x-a)/(b-a));return x*x*(3-2*x)};
+function prim(s,t,w,h,o){const X=s.x*w,Y=s.y*h,R=s.r*w,OX=s.ox*w,OY=s.oy*h;let dx=X-OX,dy=Y-OY;const dl=Math.hypot(dx,dy)||1;dx/=dl;dy/=dl;const an=Math.atan2(dy,dx);
+  const f=cl((t-s.d)/.2),g=cl((t-s.d-.2)/.12),st=cl((t-s.d-.32)/.3);if(f<=0)return;
+  if(g===0){for(let i=0;i<6;i++){const q=f-i*.035;if(q<0)break;o.push(OX+(X-OX)*q,OY+(Y-OY)*q-4*s.arch*h*q*(1-q),R*(.3-i*.035))}return}
+  const e=1-Math.pow(1-g,3),n=7;
+  for(let i=0;i<n;i++){const u=i/(n-1);o.push(X+dx*u*s.L*R*e,Y+dy*u*s.L*R*e,R*e*(1-.5*u)*(1+.12*st)*(.9+.2*s.w[i]))}
+  o.push(X,Y,R*e*(1+.1*st));const e2=1-Math.pow(1-g,2);
+  for(const a of s.sat){const D=a.d*R*e2,px=X+Math.cos(an+a.o)*D,py=Y+Math.sin(an+a.o)*D+R*.5*st*st;o.push(px,py,a.r*R*(1.1-.2*st));
+    if(a.s&&st<1)for(let k=1;k<3;k++)o.push(X+(px-X)*k/3,Y+(py-Y)*k/3,a.r*R*.55*(1-st))}
+  for(const d of s.dr){const pr=cl((t-s.d-.3)/.55),len=d.l*h*Math.pow(pr,1.5),x2=X+d.dx*R,y0=Y+R*.35;
+    for(let y=y0;y<=y0+len;y+=R*.16)o.push(x2,y,R*.17);o.push(x2,y0+len,R*.26*Math.min(1,pr*3))}}
+const SP=(()=>{const c=document.createElement("canvas");c.width=c.height=64;const x=c.getContext("2d"),g=x.createRadialGradient(32,32,0,32,32,32);[[0,1],[.25,.88],[.5,.56],[.75,.19],[1,0]].forEach(a=>g.addColorStop(a[0],"rgba(255,255,255,"+a[1]+")"));x.fillStyle=g;x.fillRect(0,0,64,64);return c})();
+let FC,OC;
+function drawSplats(c,w,h,S,t){
+  const k=Math.min(1,460/w),sw=Math.max(8,Math.round(w*k)),sh=Math.max(8,Math.round(h*k));
+  FC=FC||document.createElement("canvas");OC=OC||document.createElement("canvas");FC.width=OC.width=sw;FC.height=OC.height=sh;
+  const fx=FC.getContext("2d",{willReadFrequently:true});fx.globalCompositeOperation="lighter";
+  const o=[];for(const s of S)prim(s,t,w,h,o);
+  for(let i=0;i<o.length;i+=3){const r=o[i+2]*k*1.6;if(r>0)fx.drawImage(SP,o[i]*k-r,o[i+1]*k-r,2*r,2*r)}
+  const d=fx.getImageData(0,0,sw,sh).data,oc=OC.getContext("2d"),out=oc.createImageData(sw,sh),q=out.data,th=.42;
+  for(let y=1;y<sh-1;y++)for(let x=1;x<sw-1;x++){const i=(y*sw+x)*4,a=d[i+3];if(a<90)continue;
+    const f=a/255,m=sm(th-.03,th+.03,f);if(m<=0)continue;
+    const nx=-(d[i+7]-d[i-1])/510*14,ny=-(d[i+sw*4+3]-d[i-sw*4+3])/510*14,nl=Math.sqrt(nx*nx+ny*ny+1),
+      dif=cl((nx*-.5+ny*-.62+.6)/nl),sp=Math.pow(cl((nx*-.278+ny*-.344+.889)/nl),48),hh=cl((f-th)/(1-th)),b=cl(.5+.35*dif+.2*hh);
+    q[i]=Math.min(255,214+38*b+sp*70);q[i+1]=Math.min(255,222+29*b+sp*70);q[i+2]=Math.min(255,240+8*b+sp*70);q[i+3]=m*(.8+.2*sm(0,.3,hh))*255}
+  oc.putImageData(out,0,0);c.clearRect(0,0,w,h);c.save();c.shadowColor="rgba(0,0,0,.4)";c.shadowBlur=Math.max(2,w/90);c.shadowOffsetY=Math.max(1,w/200);c.imageSmoothingEnabled=true;c.drawImage(OC,0,0,w,h);c.restore()}
+function paintSplash(cv,im,r){const on=r&&r.fx&&r.seed&&im.clientWidth;cv.style.display=on?"block":"none";if(!on)return;sizeOver(cv,im);drawSplats(cv.getContext("2d"),cv.width,cv.height,mkSplats(r.seed),1)}
+function withSplash(r,cls,click){const im=h("img",{src:urlOf(r),alt:"",on:{click}}),cv=h("canvas",{cls:"spl"}),p=()=>paintSplash(cv,im,r);im.addEventListener("load",p);if(window.ResizeObserver)new ResizeObserver(p).observe(im);return h("div",{cls:"pw "+cls},im,cv)}
+function toggleFx(id){const all=recs(),x=all.find(v=>v.id===id);if(!x)return;if(!x.seed)x.seed=(Math.random()*1e9|0)+1;x.fx=!x.fx;lsSet("ss_rec",all);render()}
 function sizeOver(cv,im){const w=im.clientWidth,h=im.clientHeight;cv.width=w;cv.height=h;cv.style.cssText="left:"+im.offsetLeft+"px;top:"+im.offsetTop+"px;width:"+w+"px;height:"+h+"px"}
 function splash(cv,im,S,done){sizeOver(cv,im);const c=cv.getContext("2d"),w=cv.width,h=cv.height;
   if(RM){drawSplats(c,w,h,S,1);done();return}
-  const T=2000,t0=performance.now();(function f(now){const t=Math.min(1,(now-t0)/T);c.clearRect(0,0,w,h);drawSplats(c,w,h,S,t);if(t<1)requestAnimationFrame(f);else done()})(t0)}
+  const T=2600,t0=performance.now();(function f(now){const t=Math.min(1,(now-t0)/T);c.clearRect(0,0,w,h);drawSplats(c,w,h,S,t);if(t<1)requestAnimationFrame(f);else done()})(t0)}
 /* ---------- слайд-шоу ---------- */
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
 function draw(){const ids=photos.map(p=>p.id);bag=bag.filter(i=>ids.includes(i));
@@ -147,10 +170,10 @@ function showCur(){
 let finishing=false,lastSplats=null;
 function finish(){
   if(finishing)return;finishing=true;clearTimeout(timer);musicStop();const ms=Date.now()-t0,p=photos.find(p=>p.id===hist[pos]);
-  const r={id:String(Date.now()),ts:Date.now(),ms,pid:hist[pos],url:p?p.url:""};
-  const all=recs();all.push(r);lsSet("ss_rec",all);pending=r;lastSplats=mkSplats();
+  const r={id:String(Date.now()),ts:Date.now(),ms,pid:hist[pos],url:p?p.url:"",seed:(Math.random()*1e9|0)+1,fx:true};
+  const all=recs();all.push(r);lsSet("ss_rec",all);pending=r;const S=mkSplats(r.seed);
   const st=$("#stage"),im=$("#simg"),cv=h("canvas",{cls:"spl"}),bb=$("#bar");if(bb)bb.style.animation="none";st.append(cv);
-  splash(cv,im,lastSplats,()=>setTimeout(()=>{if(view==="show"){finishing=false;view="result";render()}},RM?500:700))}
+  splash(cv,im,S,()=>setTimeout(()=>{if(view==="show"){finishing=false;view="result";render()}},RM?500:700))}
 
 /* ---------- экраны ---------- */
 function render(){app.replaceChildren();({home,show,result,calendar}[view])()}
@@ -175,10 +198,10 @@ function home(){
   const n=photos.length;
   app.append(h("h1",{cls:"hero"},"Goon-scrolling",h("br"),"2000"),
     h("div",{cls:"mut"},dbState==="loading"?"Загружаю фотографии…":dbState==="none"?"Не удалось загрузить список фотографий. Обновите страницу.":"Фотографий в коллекции: "+n),
-    h("div",{cls:"card"},intervalBox(),h("div",{style:"height:14px"}),musicBox(),h("div",{style:"height:14px"}),h("button",{cls:"p big",on:{click:start}},"Начать")),
-    h("div",{cls:"log"},h("a",{cls:"lnk",on:{click:()=>{calM=new Date();calSel=null;go("calendar")}}},"📅 Открыть календарь"),
+    h("div",{cls:"card"},intervalBox(),h("div",{style:"height:14px"}),musicBox(),h("div",{style:"height:14px"}),h("button",{cls:"p big",on:{click:start}},"Начать"),h("div",{style:"height:10px"}),h("button",{style:"width:100%",on:{click:()=>{calM=new Date();calSel=null;go("calendar")}}},"Календарь")),
+    h("div",{cls:"log"},
       h("h2",null,"Последние записи секундомера"),
-      (()=>{const r=recs().slice(-5).reverse();return r.length?h("div",null,r.map(x=>h("div",{cls:"rec"},h("img",{src:urlOf(x),alt:"",on:{click:()=>openPhoto(urlOf(x))}}),h("div",{cls:"t"},fmtDT(x.ts)),h("b",null,fmtMs(x.ms)))) ):h("div",{cls:"mut"},"Пока пусто — запусти слайд-шоу и нажми «Кончить».")})()));
+      (()=>{const r=recs().slice(-5).reverse();return r.length?h("div",null,r.map(x=>h("div",{cls:"rec"},withSplash(x,"",()=>openPhoto(urlOf(x),x)),h("div",{cls:"t"},fmtDT(x.ts)),h("b",null,fmtMs(x.ms)))) ):h("div",{cls:"mut"},"Пока пусто — запусти слайд-шоу и нажми «Кончить».")})()));
   }
 function show(){
   app.append(h("div",{cls:"row",style:"justify-content:space-between;flex:none"},h("span",{id:"cnt",cls:"mut"}),h("button",{style:"flex:none",on:{click:()=>go("home")}},"Выйти")),
@@ -188,10 +211,7 @@ function show(){
 function result(){
   const r=pending;blobOf(r);
   app.append(h("h1",null,"Готово"),h("div",{cls:"mut"},"Фото закреплено в календаре"),h("div",{cls:"big-t"},fmtMs(r.ms)),
-    (()=>{const im=h("img",{src:r.url,alt:"",on:{click:()=>openPhoto(r.url)}}),cv=h("canvas",{cls:"spl"});
-    const paint=()=>{if(!lastSplats||!im.clientWidth)return;sizeOver(cv,im);drawSplats(cv.getContext("2d"),cv.width,cv.height,lastSplats,1)};
-    im.addEventListener("load",paint);addEventListener("resize",paint);
-    return h("div",{cls:"card"},h("div",{cls:"pw"},im,cv),h("div",{cls:"mut",style:"margin-top:10px"},fmtDT(r.ts)))})(),
+    h("div",{cls:"card"},withSplash(r,"",()=>openPhoto(urlOf(r),r)),h("div",{cls:"mut",style:"margin-top:10px"},fmtDT(r.ts))),
     h("button",{cls:"p big",on:{click:()=>shareRec(r)}},"Поделиться результатом"),h("div",{style:"height:10px"}),h("div",{cls:"row"},h("button",{cls:"p",on:{click:()=>go("home")}},"На главную"),h("button",{on:{click:()=>{calM=new Date(r.ts);calSel=dkey(new Date(r.ts));go("calendar")}}},"Открыть календарь")))}
 function calendar(){
   const all=recs(),days=new Set(all.map(r=>dkey(new Date(r.ts)))),y=calM.getFullYear(),m=calM.getMonth();
@@ -208,9 +228,9 @@ function calendar(){
       h("div",{cls:"cal"},cells),h("div",{cls:"mut",style:"margin-top:10px"},"Фиолетовым отмечены дни с записями.")),
     h("div",{cls:"card"},h("h2",{style:"margin-top:0"},calSel?"Записи за "+calSel.split("-").reverse().join("."):"Выбери день"),
       calSel&&!list.length?h("div",{cls:"mut"},"В этот день записей нет."):null,
-      list.map(r=>h("div",{cls:"rec"},h("img",{src:urlOf(r),alt:"",on:{click:()=>openPhoto(urlOf(r))}}),
+      list.map(r=>h("div",{cls:"rec"},withSplash(r,"",()=>openPhoto(urlOf(r),r)),
         h("div",{cls:"t"},new Date(r.ts).toLocaleTimeString("ru-RU"),h("br"),h("b",null,"⏱ "+fmtMs(r.ms))),
-        h("button",{on:{click:()=>shareRec(r)}},"Поделиться"),h("button",{on:{click:()=>openPhoto(urlOf(r))}},"Открыть"),
+        h("div",{style:"display:flex;align-items:center;gap:8px;flex:none"},h("span",{cls:"mut"},"Брызги"),h("button",{cls:"sw"+(r.fx&&r.seed?" on":""),role:"switch","aria-checked":String(!!(r.fx&&r.seed)),"aria-label":"Показывать брызги",on:{click:()=>toggleFx(r.id)}},h("i"))),h("button",{on:{click:()=>shareRec(r)}},"Поделиться"),h("button",{on:{click:()=>openPhoto(urlOf(r),r)}},"Открыть"),
         h("button",{cls:"d",on:{click:()=>ask("Удалить эту запись?",()=>{lsSet("ss_rec",recs().filter(x=>x.id!==r.id));render();toast("Запись удалена")})}},"Удалить")))))}
 
 /* ---------- список фото из папки photos репозитория ---------- */
