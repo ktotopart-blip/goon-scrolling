@@ -19,6 +19,7 @@
 - Календарь: дни с записями подсвечены фиолетовым, можно листать месяцы, открывать закреплённые фото и удалять записи.
 - Кнопка «Поделиться»: отправляет фото и результат секундомера друзьям. На телефоне открывается системное меню, на компьютере копируется текст со ссылкой.
 - Последние записи секундомера видны на главной странице.
+- Фоновые стоны: переключатель на главной странице включает и выключает женские стоны во время слайдшоу
 
 ### Ваши данные
 
@@ -47,6 +48,7 @@
 - Calendar: days with entries are highlighted in purple, you can browse months, reopen pinned photos and delete entries.
 - Share button: sends the photo and the stopwatch result to friends. On phones it opens the system share sheet; on desktop it copies text with a link.
 - The latest stopwatch records are shown on the home page.
+- Background moans: a switch on the home page turns women's moans on and off during the slideshow
 
 ### Your data
 
