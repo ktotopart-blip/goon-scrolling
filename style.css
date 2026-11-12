@@ -74,3 +74,12 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border:0;border-radiu
 #sv.fs{position:fixed;inset:0;z-index:50;display:flex;flex-direction:column;gap:10px;padding:max(12px,env(safe-area-inset-top)) 12px max(12px,env(safe-area-inset-bottom));background:var(--bg);overflow:auto}
 #sv.fs #stage{flex:1;height:auto;min-height:0}
 #sv.fs #cap{margin:0;min-height:30px}
+#cmd{position:absolute;left:0;right:0;top:12%;text-align:center;padding:0 16px;font:600 clamp(20px,6vw,34px)/1.2 var(--fd);color:#fff;text-shadow:0 0 24px rgba(139,92,246,.95),0 2px 12px #000;opacity:0;pointer-events:none}
+#cmd.on{animation:cmd 3.6s ease forwards}
+@keyframes cmd{0%{opacity:0;transform:scale(.9)}10%,80%{opacity:1;transform:none}100%{opacity:0}}
+.shake{animation:shake .35s}@keyframes shake{25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
+button.lockd{opacity:.55}
+#boss{position:fixed;inset:0;z-index:200;background:#fff;color:#222;font:13px Arial,sans-serif;overflow:auto}
+#boss .t{background:#1e7145;color:#fff;padding:9px 12px;font-size:14px}#boss .tb{padding:6px 12px;background:#f3f4f6;border-bottom:1px solid #d0d7de;color:#444}
+#boss table{border-collapse:collapse;width:100%}#boss td,#boss th{border:1px solid #d0d7de;padding:4px 8px;text-align:right;color:#222}#boss th{background:#f3f4f6;font-weight:600}
+#boss .x{position:fixed;right:8px;bottom:8px;opacity:.2;background:#fff;border:1px solid #ccc;border-radius:6px;padding:4px 8px;color:#222}

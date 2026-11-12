@@ -17,7 +17,7 @@ async function shareRec(r){
 function openPhoto(u,r){if(!u){toast("Фото недоступно");return}const im=$("#mimg"),cv=$("#mcv");im.onload=()=>paintSplash(cv,im,r);im.src=u;$("#modal").style.display="flex";if(im.complete)paintSplash(cv,im,r)}
 $("#mclose").onclick=()=>$("#modal").style.display="none";
 $("#modal").onclick=e=>{if(e.target.id==="modal")$("#modal").style.display="none"};
-function go(v){exitFs();clearTimeout(timer);musicStop();finishing=false;view=v;render();window.scrollTo(0,0)}
+function go(v){exitFs();gameStop();clearTimeout(timer);musicStop();finishing=false;view=v;render();window.scrollTo(0,0)}
 
 /* ---------- слайд-шоу ---------- */
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
@@ -26,22 +26,22 @@ function draw(){const ids=photos.map(p=>p.id);bag=bag.filter(i=>ids.includes(i))
   return bag.pop()}
 function start(){
   if(!photos.length){toast(dbState==="loading"?"Фото ещё загружаются…":"Пока нет фотографий");return}
-  bag=[];hist=[];caps=[];pos=-1;shown=0;finishing=false;t0=Date.now();view="show";render();musicStart();next(true)}
+  bag=[];hist=[];caps=[];pos=-1;shown=0;finishing=false;t0=Date.now();view="show";render();musicStart();gameStart();next(true)}
 function next(first){
-  if(pos<hist.length-1){pos++}else{hist.push(draw());shown++;caps.push(shown%3===0||shown%5===0?pick(PH().c):"");pos=hist.length-1}
+  if(pos<hist.length-1){pos++}else{hist.push(draw());shown++;caps.push(shown%3===0||shown%5===0?pick(PH().c):"");pos=hist.length-1;gameNew()}
   showCur();}
 function prev(){if(finishing)return;if(pos>0){pos--;showCur()}else toast("Это первая фотография")}
 function showCur(){
   const p=photos.find(p=>p.id===hist[pos]);const img=$("#simg");if(!img)return;
   img.style.opacity=.2;img.onload=()=>img.style.opacity=1;img.src=p?p.url:"";
-  $("#cap").textContent=caps[pos]||"";preload(bag[bag.length-1]);preload(bag[bag.length-2]);const bb=$("#bar");if(bb){bb.style.animation="none";void bb.offsetWidth;bb.style.animation="bar "+interval+"s linear forwards"}$("#cnt").textContent="Фото №"+(pos+1);
-  clearTimeout(timer);timer=setTimeout(()=>next(),interval*1000)}
+  $("#cap").textContent=caps[pos]||"";preload(bag[bag.length-1]);preload(bag[bag.length-2]);const dl=gDelay(),bb=$("#bar");if(bb){bb.style.animation="none";void bb.offsetWidth;bb.style.animation="bar "+dl+"s linear forwards"}$("#cnt").textContent="Фото №"+(pos+1);
+  clearTimeout(timer);timer=setTimeout(()=>next(),dl*1000)}
 let finishing=false,newAch=[];const pre={};
 function preload(id){const p=photos.find(x=>x.id===id);if(!p||pre[id])return;const i=new Image();i.decoding="async";i.src=p.url;pre[id]=i;if(i.decode)i.decode().catch(()=>{});const k=Object.keys(pre);if(k.length>8)delete pre[k[0]]}
 function finish(){
-  if(finishing)return;finishing=true;clearTimeout(timer);musicStop();const ms=Date.now()-t0,p=photos.find(p=>p.id===hist[pos]);
+  if(finishing||!gameCanFinish())return;finishing=true;gameStop();clearTimeout(timer);musicStop();const ms=Date.now()-t0,p=photos.find(p=>p.id===hist[pos]);
   const r={id:String(Date.now()),ts:Date.now(),ms,pid:hist[pos],url:p?p.url:"",seed:(Math.random()*1e9|0)+1,fx:true};
-  r.ph=pick(PH().f);const had=ACH.map(x=>x[2](recs()));const all=recs();all.push(r);lsSet(RK,all);newAch=ACH.map((x,i)=>i).filter(i=>!had[i]&&ACH[i][2](all));pending=r;const S=mkSplats(r.seed);
+  r.ph=pick(PH().f);gameMark(r);const had=ACH.map(x=>x[2](recs()));const all=recs();all.push(r);lsSet(RK,all);newAch=ACH.map((x,i)=>i).filter(i=>!had[i]&&ACH[i][2](all));pending=r;const S=mkSplats(r.seed);
   const st=$("#stage"),im=$("#simg"),cv=h("canvas",{cls:"spl"}),bb=$("#bar");if(bb)bb.style.animation="none";st.append(cv);setTimeout(()=>{if(view==="show")st.append(h("div",{id:"fin"},r.ph))},900);
   splash(cv,im,S,()=>setTimeout(()=>{if(view==="show"){finishing=false;exitFs();view="result";render()}},RM?1500:1500))}
 
@@ -68,7 +68,7 @@ function home(){
   const n=photos.length;
   app.append(h("h1",{cls:"hero"},"Goon-scrolling",h("br"),"2000"),h("div",{cls:"phr"},fem?"Режим для девушек":""),
     h("div",{cls:"mut"},dbState==="loading"?"Загружаю фотографии…":dbState==="none"?"Не удалось загрузить список фотографий. Обновите страницу.":"Фотографий в коллекции: "+n),
-    h("div",{cls:"card"},intervalBox(),h("div",{style:"height:14px"}),musicBox(),h("div",{style:"height:14px"}),h("button",{cls:"p big",on:{click:start}},"Начать"),h("div",{style:"height:10px"}),h("div",{cls:"grid2"},h("button",{on:{click:()=>{calM=new Date();calSel=null;go("calendar")}}},"Календарь"),h("button",{on:{click:()=>go("records")}},"Рекорды"),h("button",{on:{click:()=>go("stats")}},"Статистика"),h("button",{on:{click:()=>go("ach")}},"Достижения"),h("button",{style:"grid-column:1/-1",on:{click:()=>go("settings")}},"Настройки"))),modeBox(),
+    h("div",{cls:"card"},intervalBox(),h("div",{style:"height:14px"}),musicBox(),h("div",{style:"height:14px"}),h("button",{cls:"p big",on:{click:start}},"Начать"),h("div",{style:"height:10px"}),h("div",{cls:"grid2"},h("button",{on:{click:()=>{calM=new Date();calSel=null;go("calendar")}}},"Календарь"),h("button",{on:{click:()=>go("records")}},"Рекорды"),h("button",{on:{click:()=>go("stats")}},"Статистика"),h("button",{on:{click:()=>go("ach")}},"Достижения"),h("button",{style:"grid-column:1/-1",on:{click:()=>go("settings")}},"Настройки"),h("button",{style:"grid-column:1/-1",on:{click:boss}},"Босс идёт"))),modeBox(),gameBox(),
     h("div",{cls:"log"},
       h("h2",null,"Последние записи секундомера"),
       (()=>{const r=recs().slice(-5).reverse();return r.length?h("div",null,r.map(x=>h("div",{cls:"rec"},withSplash(x,"",()=>openPhoto(urlOf(x),x)),h("div",{cls:"t"},fmtDT(x.ts)),h("b",null,fmtMs(x.ms)))) ):h("div",{cls:"mut"},"Пока пусто — запусти слайд-шоу и нажми «Кончить».")})()));
@@ -78,13 +78,13 @@ function toggleFs(){const sv=$("#sv");if(!sv)return;if(sv.classList.contains("fs
   sv.classList.add("fs");$("#fsb").textContent="Свернуть";const rq=sv.requestFullscreen||sv.webkitRequestFullscreen;if(rq)try{const p=rq.call(sv);if(p&&p.catch)p.catch(()=>{})}catch(e){}}
 document.addEventListener("fullscreenchange",()=>{if(!document.fullscreenElement)exitFs()});
 function show(){
-  app.append(h("div",{id:"sv"},h("div",{cls:"row",style:"justify-content:space-between;flex:none"},h("span",{id:"cnt",cls:"mut"}),h("button",{id:"fsb",style:"flex:none",on:{click:toggleFs}},"На весь экран"),h("button",{style:"flex:none",on:{click:()=>go("home")}},"Выйти")),
-    h("div",{id:"stage"},h("img",{id:"simg",alt:"Фото"}),h("div",{id:"bar"})),h("div",{id:"cap"}),
+  app.append(h("div",{id:"sv"},h("div",{cls:"row",style:"justify-content:space-between;flex:none"},h("span",{id:"cnt",cls:"mut"}),h("button",{id:"fsb",style:"flex:none",on:{click:toggleFs}},"На весь экран"),h("button",{style:"flex:none",on:{click:boss}},"Босс!"),h("button",{style:"flex:none",on:{click:()=>go("home")}},"Выйти")),
+    h("div",{id:"stage"},h("img",{id:"simg",alt:"Фото"}),h("div",{id:"bar"}),h("div",{id:"cmd"})),h("div",{id:"cap"}),h("div",{id:"gstat",cls:"mut",style:"text-align:center;min-height:22px"}),
     h("button",{on:{click:prev},style:"width:100%"},"← Назад"),
-    h("div",{style:"height:10px"}),h("button",{cls:"p big",on:{click:finish}},"Кончить")))}
+    h("div",{style:"height:10px"}),h("button",{id:"fbtn",cls:"p big",on:{click:finish}},"Кончить")))}
 function result(){
   const r=pending;blobOf(r);if(newAch.length){const m=newAch.map(i=>AN(i)[2]+" "+AN(i)[0]).join(", ");newAch=[];setTimeout(()=>toast("Достижение: "+m),700)}
-  app.append(h("h1",null,"Готово"),h("div",{cls:"mut"},"Фото закреплено в календаре"),h("div",{cls:"phr"},r.ph||""),h("div",{cls:"big-t"},fmtMs(r.ms)),
+  app.append(h("h1",null,resTitle(r)),h("div",{cls:"mut"},"Фото закреплено в календаре"),h("div",{cls:"phr"},r.ph||""),h("div",{cls:"big-t"},fmtMs(r.ms)),
     (()=>{const wp=withSplash(r,"",()=>openPhoto(urlOf(r),r));return h("div",{cls:"card"},wp,h("div",{cls:"mut",style:"margin-top:10px"},fmtDT(r.ts)),r.fx&&r.seed?h("button",{style:"width:100%;margin-top:12px",on:{click:()=>wipe(wp.querySelector("canvas"),()=>{const all=recs(),x=all.find(v=>v.id===r.id);if(x){x.fx=false;lsSet(RK,all)}r.fx=false;toast("Вытерто");render()})}},"Вытереться"):null)})(),
     h("button",{cls:"p big",on:{click:()=>shareRec(r)}},"Поделиться результатом"),h("div",{style:"height:10px"}),h("div",{cls:"row"},h("button",{cls:"p",on:{click:()=>go("home")}},"На главную"),h("button",{on:{click:()=>{calM=new Date(r.ts);calSel=dkey(new Date(r.ts));go("calendar")}}},"Открыть календарь")))}
 function page(t,...k){app.append(h("button",{on:{click:()=>go("home")}},"← На главную"),h("h1",null,t),...k.flat().filter(Boolean))}
