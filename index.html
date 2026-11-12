@@ -68,6 +68,9 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border:0;border-radiu
 .phr{font:500 clamp(15px,4vw,19px)/1.3 var(--fd);color:var(--lil);margin:6px 0 4px}
 .bars{display:flex;gap:8px;align-items:flex-end;height:130px}.bc{flex:1;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:4px}
 .bv{width:100%;min-height:3px;border-radius:6px;background:linear-gradient(var(--lil),var(--pur))}.bc span{font-size:11px}
+.ach{display:flex;align-items:center;gap:14px}
+.medal{width:58px;height:58px;border-radius:50%;display:grid;place-items:center;font-size:29px;flex:none;background:radial-gradient(circle at 32% 26%,#d6c8ff,#7c4dff 72%);box-shadow:0 0 0 3px rgba(196,176,255,.3),0 10px 22px -8px rgba(139,92,246,.9)}
+.lock .medal{filter:grayscale(1);opacity:.4;box-shadow:none}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}#bar{animation:none!important}}
 </style>
 </head>
@@ -135,27 +138,36 @@ function prim(s,t,w,h,o){const X=s.x*w,Y=s.y*h,R=s.r*w,OX=s.ox*w,OY=s.oy*h;let d
   for(const d of s.dr){const pr=cl((t-s.d-.16)/.55),len=d.l*h*Math.pow(pr,1.5),x2=X+d.dx*R,y0=Y+R*.35;
     for(let y=y0;y<=y0+len;y+=R*.16)o.push(x2,y,R*.17);o.push(x2,y0+len,R*.26*Math.min(1,pr*3))}}
 const SP=(()=>{const c=document.createElement("canvas");c.width=c.height=64;const x=c.getContext("2d"),g=x.createRadialGradient(32,32,0,32,32,32);[[0,1],[.25,.88],[.5,.56],[.75,.19],[1,0]].forEach(a=>g.addColorStop(a[0],"rgba(255,255,255,"+a[1]+")"));x.fillStyle=g;x.fillRect(0,0,64,64);return c})();
-let FC,OC;
+let FC;const EK={T:(x,y,g)=>(y*g+x)*2,B:(x,y,g)=>((y+1)*g+x)*2,L:(x,y,g)=>(y*g+x)*2+1,R:(x,y,g)=>(y*g+x+1)*2+1};
+const SEG=[[],[["L","B"]],[["B","R"]],[["L","R"]],[["T","R"]],[["T","R"],["L","B"]],[["T","B"]],[["T","L"]],[["T","L"]],[["T","B"]],[["T","L"],["B","R"]],[["T","R"]],[["L","R"]],[["B","R"]],[["L","B"]],[]];
+function contour(F,gw,gh,t,sx,sy){const pt=new Map(),adj=new Map(),P=new Path2D(),link=(a,b)=>{(adj.get(a)||adj.set(a,[]).get(a)).push(b)};
+  for(let y=0;y<gh-1;y++)for(let x=0;x<gw-1;x++){const i=y*gw+x,tl=F[i],tr=F[i+1],bl=F[i+gw],br=F[i+gw+1],c=(tl>t?8:0)|(tr>t?4:0)|(br>t?2:0)|(bl>t?1:0);if(!c||c===15)continue;
+    const pos={T:[x+(t-tl)/(tr-tl),y],B:[x+(t-bl)/(br-bl),y+1],L:[x,y+(t-tl)/(bl-tl)],R:[x+1,y+(t-tr)/(br-tr)]};
+    for(const[a,b]of SEG[c]){const ka=EK[a](x,y,gw),kb=EK[b](x,y,gw);pt.set(ka,pos[a]);pt.set(kb,pos[b]);link(ka,kb);link(kb,ka)}}
+  const seen=new Set();
+  for(const k0 of adj.keys()){if(seen.has(k0))continue;const L=[];let k=k0;while(k!==undefined&&!seen.has(k)){seen.add(k);const p=pt.get(k);L.push([(p[0]-.5)*sx,(p[1]-.5)*sy]);k=adj.get(k).find(n=>!seen.has(n))}
+    const n=L.length;if(n>2){P.moveTo((L[0][0]+L[n-1][0])/2,(L[0][1]+L[n-1][1])/2);for(let i=0;i<n;i++){const A=L[i],B=L[(i+1)%n];P.quadraticCurveTo(A[0],A[1],(A[0]+B[0])/2,(A[1]+B[1])/2)}P.closePath()}}
+  return P}
 function drawSplats(c,w,h,S,t){
-  const k=Math.min(1,560/w),sw=Math.max(8,Math.round(w*k)),sh=Math.max(8,Math.round(h*k));
-  FC=FC||document.createElement("canvas");OC=OC||document.createElement("canvas");FC.width=OC.width=sw;FC.height=OC.height=sh;
+  const g0=Math.min(300,Math.round(w)),h0=Math.max(8,Math.round(g0*h/w)),k=g0/w,sx=w/g0,sy=h/h0,gw=g0+2,gh=h0+2;
+  FC=FC||document.createElement("canvas");FC.width=g0;FC.height=h0;
   const fx=FC.getContext("2d",{willReadFrequently:true});fx.globalCompositeOperation="lighter";
   const o=[];for(const s of S)prim(s,t,w,h,o);
   for(let i=0;i<o.length;i+=3){const r=o[i+2]*k*1.6;if(r>0)fx.drawImage(SP,o[i]*k-r,o[i+1]*k-r,2*r,2*r)}
-  const d=fx.getImageData(0,0,sw,sh).data,oc=OC.getContext("2d"),out=oc.createImageData(sw,sh),q=out.data,th=.42;
-  for(let y=1;y<sh-1;y++)for(let x=1;x<sw-1;x++){const i=(y*sw+x)*4,a=d[i+3];if(a<90)continue;
-    const f=a/255,m=sm(th-.03,th+.03,f);if(m<=0)continue;
-    const nx=-(d[i+7]-d[i-1])/510*14,ny=-(d[i+sw*4+3]-d[i-sw*4+3])/510*14,nl=Math.sqrt(nx*nx+ny*ny+1),
-      dif=cl((nx*-.5+ny*-.62+.6)/nl),dh=cl((nx*-.278+ny*-.344+.889)/nl),sp=Math.pow(dh,90)*1.3+Math.pow(dh,14)*.18,hh=cl((f-th)/(1-th)),b=cl(.5+.35*dif+.2*hh+(1-sm(0,.15,hh))*.2);
-    q[i]=Math.min(255,214+38*b+sp*70);q[i+1]=Math.min(255,222+29*b+sp*70);q[i+2]=Math.min(255,240+8*b+sp*70);q[i+3]=m*(.8+.2*sm(0,.3,hh))*255}
-  oc.putImageData(out,0,0);c.clearRect(0,0,w,h);c.save();c.shadowColor="rgba(0,0,0,.4)";c.shadowBlur=Math.max(2,w/90);c.shadowOffsetY=Math.max(1,w/200);c.imageSmoothingEnabled=true;c.drawImage(OC,0,0,w,h);c.restore()}
+  const d=fx.getImageData(0,0,g0,h0).data,F=new Float32Array(gw*gh);
+  for(let y=0;y<h0;y++)for(let x=0;x<g0;x++)F[(y+1)*gw+x+1]=d[(y*g0+x)*4+3]/255;
+  const P=[.42,.58,.74,.9].map(l=>contour(F,gw,gh,l,sx,sy));
+  c.clearRect(0,0,w,h);c.save();c.shadowColor="rgba(0,0,0,.45)";c.shadowBlur=w/60;c.shadowOffsetY=w/170;c.fillStyle="rgba(206,215,236,.95)";c.fill(P[0],"evenodd");c.restore();
+  c.save();c.clip(P[0],"evenodd");
+  [["#e4eaf6",1],["#f3f5fb",2],["#ffffff",3]].forEach(([col,i])=>{c.save();c.translate(-i*w/600,-i*w/480);c.shadowColor=col;c.shadowBlur=w/120*i;c.fillStyle=col;c.fill(P[i],"evenodd");c.restore()});
+  c.restore()}
 function paintSplash(cv,im,r){const on=r&&r.fx&&r.seed&&im.clientWidth;cv.style.display=on?"block":"none";if(!on)return;sizeOver(cv,im);drawSplats(cv.getContext("2d"),cv.width,cv.height,mkSplats(r.seed),1.1)}
 function withSplash(r,cls,click){const im=h("img",{src:urlOf(r),alt:"",loading:"lazy",decoding:"async",on:{click}}),cv=h("canvas",{cls:"spl"}),p=()=>paintSplash(cv,im,r);im.addEventListener("load",p);if(window.ResizeObserver)new ResizeObserver(p).observe(im);return h("div",{cls:"pw "+cls},im,cv)}
 function wipe(cv,done){const c=cv&&cv.getContext("2d"),w=cv?cv.width:0,hh=cv?cv.height:0;if(!w){done();return}
   c.globalCompositeOperation="destination-out";const T=RM?1:1400,t0=performance.now();let px=0;
   (function f(now){const p=Math.min(1,(now-t0)/T);for(let q=px;q<=p;q+=.004){c.beginPath();c.arc(q*w*1.2-.1*w,hh*(.5+.5*Math.sin(q*16)),hh*.4,0,6.283);c.fill()}px=p;if(p<1)requestAnimationFrame(f);else{c.globalCompositeOperation="source-over";done()}})(t0)}
 function toggleFx(id){const all=recs(),x=all.find(v=>v.id===id);if(!x)return;if(!x.seed)x.seed=(Math.random()*1e9|0)+1;x.fx=!x.fx;lsSet("ss_rec",all);render()}
-function sizeOver(cv,im){const w=im.clientWidth,h=im.clientHeight;cv.width=w;cv.height=h;cv.style.cssText="left:"+im.offsetLeft+"px;top:"+im.offsetTop+"px;width:"+w+"px;height:"+h+"px"}
+function sizeOver(cv,im){const w=im.clientWidth,h=im.clientHeight;const dp=Math.min(2,window.devicePixelRatio||1);cv.width=Math.round(w*dp);cv.height=Math.round(h*dp);cv.style.cssText="left:"+im.offsetLeft+"px;top:"+im.offsetTop+"px;width:"+w+"px;height:"+h+"px"}
 function splash(cv,im,S,done){sizeOver(cv,im);const c=cv.getContext("2d"),w=cv.width,h=cv.height;
   if(RM){drawSplats(c,w,h,S,1.1);done();return}
   const T=4800,t0=performance.now();(function f(now){const t=Math.min(1,(now-t0)/T);c.clearRect(0,0,w,h);drawSplats(c,w,h,S,t*1.1);if(t<1)requestAnimationFrame(f);else done()})(t0)}
@@ -187,6 +199,7 @@ ACH.push(["Спринтер","Сессия быстрее 5 секунд",a=>a.s
 ["Выходной режим","Запись в субботу или воскресенье",a=>a.some(x=>[0,6].includes(new Date(x.ts).getDay()))],["Офисный планктон","Запись в будни с 9:00 до 17:59",a=>a.some(x=>{const w=new Date(x.ts).getDay();return w>0&&w<6&&hr(x)>=9&&hr(x)<18})],
 ["Неделя без перерыва","Записи 7 дней подряд",a=>streak(a)>=7],["Дважды в день","2 записи за один день",a=>cnts(a).some(c=>c>=2)],["Пятёрка за день","5 записей за один день",a=>cnts(a).some(c=>c>=5)],
 ["Двойной удар","Две записи с разницей меньше минуты",a=>{const t=a.map(x=>x.ts).sort((p,q)=>p-q);return t.some((v,i)=>i&&v-t[i-1]<6e4)}],["Верный фаворит","Одно фото выбрано 3 раза",a=>{const m={};a.forEach(x=>m[x.pid]=(m[x.pid]||0)+1);return Object.values(m).some(c=>c>=3)}],["Чистюля","Жидкость стёрта хотя бы с одного фото",a=>a.some(x=>x.fx===false)]);
+const ICON={"Первый залп":"💧","Скорострел":"⚡","Марафонец":"🏃","Коллекционер":"🖼️","Стахановец":"⛏️","Ночной дозор":"🌙","Постоянство":"🔥","Спринтер":"🏁","Молния":"🌩️","Терпила":"🐢","Затяжной":"⏳","Четвертак":"🥉","Полтинник":"🥈","Сотка":"🥇","Знаток":"🎓","Куратор":"🏛️","Ранняя пташка":"🐦","Обеденный перерыв":"🍽️","Вечерний ритуал":"🌆","Выходной режим":"🛋️","Офисный планктон":"💼","Неделя без перерыва":"📅","Дважды в день":"✌️","Пятёрка за день":"🖐️","Двойной удар":"🥊","Верный фаворит":"❤️","Чистюля":"🧽"};
 let finishing=false,newAch=[];const pre={};
 function preload(id){const p=photos.find(x=>x.id===id);if(!p||pre[id])return;const i=new Image();i.decoding="async";i.src=p.url;pre[id]=i;if(i.decode)i.decode().catch(()=>{});const k=Object.keys(pre);if(k.length>8)delete pre[k[0]]}
 function finish(){
@@ -230,7 +243,7 @@ function show(){
     h("button",{on:{click:prev},style:"width:100%"},"← Назад"),
     h("div",{style:"height:10px"}),h("button",{cls:"p big",on:{click:finish}},"Кончить"))}
 function result(){
-  const r=pending;blobOf(r);if(newAch.length){const m=newAch.join(", ");newAch=[];setTimeout(()=>toast("🏆 Достижение: "+m),700)}
+  const r=pending;blobOf(r);if(newAch.length){const m=newAch.map(n=>(ICON[n]||"🏆")+" "+n).join(", ");newAch=[];setTimeout(()=>toast("Достижение: "+m),700)}
   app.append(h("h1",null,"Готово"),h("div",{cls:"mut"},"Фото закреплено в календаре"),h("div",{cls:"phr"},r.ph||""),h("div",{cls:"big-t"},fmtMs(r.ms)),
     (()=>{const wp=withSplash(r,"",()=>openPhoto(urlOf(r),r));return h("div",{cls:"card"},wp,h("div",{cls:"mut",style:"margin-top:10px"},fmtDT(r.ts)),r.fx&&r.seed?h("button",{style:"width:100%;margin-top:12px",on:{click:()=>wipe(wp.querySelector("canvas"),()=>{const all=recs(),x=all.find(v=>v.id===r.id);if(x){x.fx=false;lsSet("ss_rec",all)}r.fx=false;toast("Вытерто");render()})}},"Вытереться"):null)})(),
     h("button",{cls:"p big",on:{click:()=>shareRec(r)}},"Поделиться результатом"),h("div",{style:"height:10px"}),h("div",{cls:"row"},h("button",{cls:"p",on:{click:()=>go("home")}},"На главную"),h("button",{on:{click:()=>{calM=new Date(r.ts);calSel=dkey(new Date(r.ts));go("calendar")}}},"Открыть календарь")))}
@@ -244,7 +257,7 @@ function stats(){const a=recs(),n=a.length,tot=a.reduce((s,x)=>s+x.ms,0),cnt={};
   page("Статистика",h("div",{cls:"grid2"},tile("Всего",n),tile("Сегодня",on(dkey(new Date()))),tile("За 7 дней",a.filter(x=>x.ts>Date.now()-7*864e5).length),tile("Среднее время",n?fmtMs(tot/n):"—"),tile("Всего времени",fmtMs(tot)),tile("Лучшее время",n?fmtMs(Math.min(...a.map(x=>x.ms))):"—")),
     h("div",{cls:"card"},h("h2",null,"Последние 7 дней"),h("div",{cls:"bars"},days.map(d=>h("div",{cls:"bc"},h("div",{cls:"bv",style:"height:"+Math.round(d.c/mx*80)+"%"}),h("span",{cls:"mut"},d.l+" "+d.c))))),
     fr?h("div",{cls:"card"},h("h2",null,"Любимое фото"),h("div",{cls:"rec"},withSplash(fr,"",()=>openPhoto(urlOf(fr),fr)),h("div",{cls:"t"},"Выбрано раз: "+fav[1]))):null)}
-function ach(){const a=recs(),ok=ACH.map(x=>x[2](a));page("Достижения",h("div",{cls:"mut"},"Открыто "+ok.filter(Boolean).length+" из "+ACH.length),ACH.map((x,i)=>h("div",{cls:"card",style:"margin:10px 0;opacity:"+(ok[i]?1:.5)},h("b",null,(ok[i]?"🏆 ":"🔒 ")+x[0]),h("div",{cls:"mut"},x[1]))))}
+function ach(){const a=recs(),ok=ACH.map(x=>x[2](a));page("Достижения",h("div",{cls:"mut"},"Открыто "+ok.filter(Boolean).length+" из "+ACH.length),ACH.map((x,i)=>h("div",{cls:"card ach"+(ok[i]?"":" lock"),style:"margin:10px 0"},h("div",{cls:"medal"},ICON[x[0]]||"🏆"),h("div",null,h("b",null,(ok[i]?"":"🔒 ")+x[0]),h("div",{cls:"mut"},x[1])))))}
 function calendar(){
   const all=recs(),days=new Set(all.map(r=>dkey(new Date(r.ts)))),y=calM.getFullYear(),m=calM.getMonth();
   const first=new Date(y,m,1),off=(first.getDay()+6)%7,dim=new Date(y,m+1,0).getDate(),today=dkey(new Date());
