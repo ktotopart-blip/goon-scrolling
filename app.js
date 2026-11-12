@@ -61,27 +61,29 @@ function intervalBox(onch){
 /* ---------- музыка ---------- */
 function musicBox(){
   const on=audioOn&&tracks.length>0;
-  const sw=h("button",{cls:"sw"+(on?" on":""),role:"switch","aria-checked":String(on),"aria-label":"Музыка во время слайдшоу",on:{click:()=>{
+  const sw=h("button",{cls:"sw"+(on?" on":""),role:"switch","aria-checked":String(on),"aria-label":"Стоны",on:{click:()=>{
     if(!tracks.length){toast(dbState==="loading"?"Аудио ещё загружается…":"Аудиофайлов пока нет");return}
     audioOn=!audioOn;lsSet("ss_aud_on",audioOn);render()}}},h("i"));
-  return h("div",{cls:"row",style:"justify-content:space-between;flex-wrap:nowrap"},h("div",{style:"flex:1"},h("div",null,"🎵 Музыка во время слайдшоу"),h("div",{cls:"mut"},tracks.length?(on?"Включена · треков: ":"Выключена · треков: ")+tracks.length:dbState==="loading"?"Загрузка…":"Треки не найдены")),sw)}
+  return h("div",{cls:"row",style:"justify-content:space-between;flex-wrap:nowrap"},h("div",{style:"flex:1"},h("div",null,"Стоны"),h("div",{cls:"mut"},tracks.length?(on?"Включена · треков: ":"Выключена · треков: ")+tracks.length:dbState==="loading"?"Загрузка…":"Треки не найдены")),sw)}
 function playTrack(){audioEl.src=apl[ai];audioEl.play().catch(()=>toast("Браузер не дал включить музыку"))}
 function musicStart(){if(!audioOn||!tracks.length)return;apl=shuffle(tracks.slice());ai=0;aerr=0;playTrack()}
 function musicStop(){try{audioEl.pause();audioEl.removeAttribute("src");audioEl.load()}catch(e){}apl=[]}
 audioEl.addEventListener("ended",()=>{if(!apl.length)return;aerr=0;ai++;if(ai>=apl.length){ai=0;shuffle(apl)}playTrack()});
 audioEl.addEventListener("error",()=>{if(!apl.length)return;aerr++;if(aerr>=apl.length){toast("Не удалось воспроизвести аудио");musicStop();return}ai=(ai+1)%apl.length;playTrack()});
+function statStrip(){const a=recs(),best=a.length?fmtMs(Math.min(...a.map(x=>x.ms))):"—",ok=ACH.filter(x=>x[2](a)).length,P=(l,v)=>h("div",{cls:"pill"},h("div",{cls:"pv"},String(v)),h("div",{cls:"mut"},l));
+  return h("div",{cls:"stats"},P("Записей",a.length),P("Лучшее",best),P("Награды",ok+"/"+ACH.length))}
 function home(){
   const n=photos.length;
   app.append(h("h1",{cls:"hero"},"Goon-scrolling",h("br"),"2000"),h("div",{cls:"phr"},fem?"Режим для девушек":""),
     h("div",{cls:"mut"},dbState==="loading"?"Загружаю фотографии…":dbState==="none"?"Не удалось загрузить список фотографий. Обновите страницу.":"Фотографий в коллекции: "+n),
-    h("div",{cls:"card"},intervalBox(),h("div",{style:"height:14px"}),musicBox(),h("div",{style:"height:14px"}),h("button",{cls:"p big",on:{click:start}},"Начать"),h("div",{style:"height:10px"}),h("div",{cls:"grid2"},h("button",{on:{click:()=>{calM=new Date();calSel=null;go("calendar")}}},"Календарь"),h("button",{on:{click:()=>go("records")}},"Рекорды"),h("button",{on:{click:()=>go("stats")}},"Статистика"),h("button",{on:{click:()=>go("ach")}},"Достижения"),h("button",{style:"grid-column:1/-1",on:{click:()=>go("settings")}},"Настройки"),h("button",{style:"grid-column:1/-1",on:{click:boss}},"Босс идёт"))),modeBox(),gameBox(),
+    statStrip(),h("div",{cls:"card"},intervalBox(),h("div",{style:"height:14px"}),musicBox(),h("div",{style:"height:14px"}),h("button",{cls:"p big",on:{click:start}},"Начать"),h("div",{style:"height:10px"}),h("div",{cls:"grid2"},h("button",{on:{click:()=>{calM=new Date();calSel=null;go("calendar")}}},"Календарь"),h("button",{on:{click:()=>go("records")}},"Рекорды"),h("button",{on:{click:()=>go("stats")}},"Статистика"),h("button",{on:{click:()=>go("ach")}},"Достижения"),h("button",{style:"grid-column:1/-1",on:{click:()=>go("settings")}},"Настройки"),h("button",{style:"grid-column:1/-1",on:{click:boss}},"Босс идёт"))),modeBox(),gameBox(),
     h("div",{cls:"log"},
       h("h2",null,"Последние записи секундомера"),
       (()=>{const r=recs().slice(-5).reverse();return r.length?h("div",null,r.map(x=>h("div",{cls:"rec"},withSplash(x,"",()=>openPhoto(urlOf(x),x)),h("div",{cls:"t"},fmtDT(x.ts)),h("b",null,fmtMs(x.ms)))) ):h("div",{cls:"mut"},"Пока пусто — запусти слайд-шоу и нажми «Кончить».")})()));
   }
 function exitFs(){const sv=$("#sv");if(sv)sv.classList.remove("fs");const b=$("#fsb");if(b)b.textContent="На весь экран";if(document.fullscreenElement&&document.exitFullscreen)document.exitFullscreen().catch(()=>{})}
 function toggleFs(){const sv=$("#sv");if(!sv)return;if(sv.classList.contains("fs")){exitFs();return}
-  sv.classList.add("fs");$("#fsb").textContent="Свернуть";const rq=sv.requestFullscreen||sv.webkitRequestFullscreen;if(rq)try{const p=rq.call(sv);if(p&&p.catch)p.catch(()=>{})}catch(e){}}
+  sv.classList.add("fs");$("#fsb").textContent="Свернуть";evInc("fs");const rq=sv.requestFullscreen||sv.webkitRequestFullscreen;if(rq)try{const p=rq.call(sv);if(p&&p.catch)p.catch(()=>{})}catch(e){}}
 document.addEventListener("fullscreenchange",()=>{if(!document.fullscreenElement)exitFs()});
 function show(){
   app.append(h("div",{id:"sv"},h("div",{cls:"row",style:"justify-content:space-between;flex:none"},h("span",{id:"cnt",cls:"mut"}),h("button",{id:"fsb",style:"flex:none",on:{click:toggleFs}},"На весь экран"),h("button",{style:"flex:none",on:{click:boss}},"Босс!"),h("button",{style:"flex:none",on:{click:()=>go("home")}},"Выйти")),
@@ -91,7 +93,7 @@ function show(){
 function result(){
   const r=pending;blobOf(r);if(newAch.length){const m=newAch.map(i=>AN(i)[2]+" "+AN(i)[0]).join(", ");newAch=[];setTimeout(()=>toast("Достижение: "+m),700)}
   app.append(h("h1",null,resTitle(r)),h("div",{cls:"mut"},"Фото закреплено в календаре"),h("div",{cls:"phr"},r.ph||""),h("div",{cls:"big-t"},fmtMs(r.ms)),
-    (()=>{const wp=withSplash(r,"",()=>openPhoto(urlOf(r),r));return h("div",{cls:"card"},wp,h("div",{cls:"mut",style:"margin-top:10px"},fmtDT(r.ts)),r.fx&&r.seed?h("button",{style:"width:100%;margin-top:12px",on:{click:()=>wipe(wp.querySelector("canvas"),()=>{const all=recs(),x=all.find(v=>v.id===r.id);if(x){x.fx=false;lsSet(RK,all)}r.fx=false;toast("Вытерто");render()})}},"Вытереться"):null)})(),
+    (()=>{const wp=withSplash(r,"",()=>openPhoto(urlOf(r),r));return h("div",{cls:"card"},wp,h("div",{cls:"mut",style:"margin-top:10px"},fmtDT(r.ts)),r.fx&&r.seed?h("button",{style:"width:100%;margin-top:12px",on:{click:()=>wipe(wp.querySelector("canvas"),()=>{const all=recs(),x=all.find(v=>v.id===r.id);if(x){x.fx=false;lsSet(RK,all)}r.fx=false;toast("Вытерто");evInc("wipe");render()})}},"Вытереться"):null)})(),
     h("button",{cls:"p big",on:{click:()=>shareRec(r)}},"Поделиться результатом"),h("div",{style:"height:10px"}),h("div",{cls:"row"},h("button",{cls:"p",on:{click:()=>go("home")}},"На главную"),h("button",{on:{click:()=>{calM=new Date(r.ts);calSel=dkey(new Date(r.ts));go("calendar")}}},"Открыть календарь")))}
 function page(t,...k){app.append(h("button",{on:{click:()=>go("home")}},"← На главную"),h("h1",null,t),...k.flat().filter(Boolean))}
 function records(){const a=recs(),lst=(t,r)=>h("div",{cls:"log",style:"margin-top:22px"},h("h2",null,t),r.length?r.map((x,i)=>h("div",{cls:"rec"},h("b",{style:"width:22px"},String(i+1)),withSplash(x,"",()=>openPhoto(urlOf(x),x)),h("div",{cls:"t"},fmtDT(x.ts)),h("b",null,fmtMs(x.ms)))):h("div",{cls:"mut"},"Пока нет записей"));
@@ -106,21 +108,23 @@ function stats(){const a=recs(),n=a.length,tot=a.reduce((s,x)=>s+x.ms,0),cnt={};
 function ach(){const a=recs(),ok=ACH.map(x=>x[2](a));page("Достижения",h("div",{cls:"mut"},"Открыто "+ok.filter(Boolean).length+" из "+ACH.length),ACH.map((x,i)=>{const n=AN(i);return h("div",{cls:"card ach"+(ok[i]?"":" lock"),style:"margin:10px 0"},h("div",{cls:"medal"},n[2]),h("div",null,h("b",null,(ok[i]?"":"🔒 ")+n[0]),h("div",{cls:"mut"},n[1])))}))}
 function modeBox(){const R=fem?[["d","Доминантный"],["s","Послушный"]]:[["n","Обычный"],["d","Доминантная"],["s","Послушная"]],u=location.origin+location.pathname+(fem?"":"?mode=f");
   return h("div",{cls:"card"},h("h2",null,fem?"Голос: мужчина":"Голос: девушка"),h("div",{cls:"mut",style:"margin-bottom:10px"},"От чьего лица звучат подписи"),
-    h("div",{cls:"row"},R.map(([k,l])=>h("button",{cls:role===k?"p":"",on:{click:()=>{role=k;lsSet("ss_role_"+(fem?"f":"m"),k);render()}}},l))),
-    h("div",{style:"height:10px"}),h("button",{style:"width:100%",on:{click:()=>{location.href=u}}},fem?"Перейти в режим для парней":"Перейти в режим для девушек"))}
+    h("div",{cls:"seg"},R.map(([k,l])=>h("button",{cls:role===k?"p":"",on:{click:()=>{role=k;lsSet("ss_role_"+(fem?"f":"m"),k);render()}}},l))),
+    h("div",{style:"height:10px"}),h("button",{cls:fem?"boy":"girl",style:"width:100%",on:{click:()=>{location.href=u}}},fem?"Перейти в режим для парней":"Перейти в режим для девушек"))}
 function calendar(){
-  const all=recs(),days=new Set(all.map(r=>dkey(new Date(r.ts)))),y=calM.getFullYear(),m=calM.getMonth();
+  const all=recs(),days=new Set(all.map(r=>dkey(new Date(r.ts)))),cm={},y=calM.getFullYear(),m=calM.getMonth();
+  all.forEach(r=>{const k=dkey(new Date(r.ts));cm[k]=(cm[k]||0)+1});
   const first=new Date(y,m,1),off=(first.getDay()+6)%7,dim=new Date(y,m+1,0).getDate(),today=dkey(new Date());
   const cells=["Пн","Вт","Ср","Чт","Пт","Сб","Вс"].map(d=>h("div",{cls:"dn"},d));
   for(let i=0;i<off;i++)cells.push(h("i"));
   for(let d=1;d<=dim;d++){const k=y+"-"+String(m+1).padStart(2,"0")+"-"+String(d).padStart(2,"0");
-    cells.push(h("button",{cls:(days.has(k)?"has ":"")+(k===calSel?"sel ":"")+(k===today?"today":""),on:{click:()=>{calSel=k;render()}}},String(d)))}
+    cells.push(h("button",{cls:(days.has(k)?"has ":"")+(k===calSel?"sel ":"")+(k===today?"today ":"")+(((off+d-1)%7)>=5?"we":""),on:{click:()=>{calSel=k;render()}}},String(d),cm[k]?h("span",{cls:"bd"},String(cm[k])):null))}
   const title=first.toLocaleDateString("ru-RU",{month:"long",year:"numeric"});
   const shift=n=>()=>{calM=new Date(y,m+n,1);calSel=null;render()};
   const list=calSel?all.filter(r=>dkey(new Date(r.ts))===calSel).sort((a,b)=>a.ts-b.ts):[];
   app.append(h("button",{on:{click:()=>go("home")}},"← На главную"),h("h1",null,"Календарь"),
-    h("div",{cls:"card"},h("div",{cls:"row",style:"justify-content:space-between;margin-bottom:12px"},h("button",{style:"flex:none",on:{click:shift(-1)},"aria-label":"Предыдущий месяц"},"‹"),h("b",{style:"text-transform:capitalize;text-align:center"},title),h("button",{style:"flex:none",on:{click:shift(1)},"aria-label":"Следующий месяц"},"›")),
-      h("div",{cls:"cal"},cells),h("div",{cls:"mut",style:"margin-top:10px"},"Фиолетовым отмечены дни с записями.")),
+    h("div",{cls:"card cal-card"},h("div",{cls:"calh"},h("button",{cls:"ar",on:{click:shift(-1)},"aria-label":"Предыдущий месяц"},"‹"),h("div",{cls:"mt"},title),h("button",{cls:"ar",on:{click:shift(1)},"aria-label":"Следующий месяц"},"›")),
+      h("div",{cls:"cal"},cells),
+      h("div",{cls:"legend"},h("span",null,h("i",{cls:"lg a"}),"есть записи"),h("span",null,h("i",{cls:"lg b"}),"сегодня"),h("button",{cls:"tdy",on:{click:()=>{calM=new Date();calSel=today;render()}}},"Сегодня"))),
     h("div",{cls:"card"},h("h2",{style:"margin-top:0"},calSel?"Записи за "+calSel.split("-").reverse().join("."):"Выбери день"),
       calSel&&!list.length?h("div",{cls:"mut"},"В этот день записей нет."):null,
       list.map(r=>h("div",{cls:"rec"},withSplash(r,"",()=>openPhoto(urlOf(r),r)),

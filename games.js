@@ -14,20 +14,20 @@ ICON["Железная воля"]="💪";ICON["Монах"]="🧘";ICON["Сла�
 ACHF.push(["Сила воли","Выиграть режим «Не кончи»","💪"],["Монахиня","Выиграть «Не кончи» на 5 минут","🧘"],["Не удержалась","Проиграть «Не кончи» быстрее 10 секунд","🥀"]);
 const mmss=ms=>{const s=Math.max(0,Math.ceil(ms/1000));return Math.floor(s/60)+":"+String(s%60).padStart(2,"0")};
 function gameBox(){const cur=GL.find(x=>x[0]===gm)||GL[0];
-  return h("div",{cls:"card"},h("h2",null,"Режим игры"),h("div",{cls:"row"},GL.map(([k,l])=>h("button",{cls:gm===k?"p":"",on:{click:()=>{gm=k;lsSet("ss_game",k);render()}}},l))),
+  return h("div",{cls:"card"},h("h2",null,"Режим игры"),h("div",{cls:"seg"},GL.map(([k,l])=>h("button",{cls:gm===k?"p":"",on:{click:()=>{gm=k;lsSet("ss_game",k);render()}}},l))),
     h("div",{cls:"mut",style:"margin:10px 0"},cur[2]),
-    gm==="c"?h("div",{cls:"row"},[1,3,5].map(m=>h("button",{cls:gdur===m?"p":"",on:{click:()=>{gdur=m;lsSet("ss_gdur",m);render()}}},m+" мин"))):null)}
+    gm==="c"?h("div",{cls:"seg"},[1,3,5].map(m=>h("button",{cls:gdur===m?"p":"",on:{click:()=>{gdur=m;lsSet("ss_gdur",m);render()}}},m+" мин"))):null)}
 function gameStart(){gameStop();gs={mode:"",n:0,freeze:0};if(gm==="c")gEnd=Date.now()+gdur*6e4;if(gm==="p")lockEnd=Date.now()+(20+Math.random()*70)*1e3;if(gm==="c"||gm==="p")gInt=setInterval(gTick,250);gTick()}
 function gameStop(){clearInterval(gInt);gInt=null}
 function gTick(){if(view!=="show"||bossT)return;const g=$("#gstat"),b=$("#fbtn");if(!g||!b)return;
   if(gm==="c"){const left=gEnd-Date.now();if(left<=0){winChallenge();return}g.textContent="Не кончи! Осталось "+mmss(left)}
   else if(gm==="p"){const left=lockEnd-Date.now();if(left>0){b.textContent="Рано, терпи… "+mmss(left);b.classList.add("lockd")}else{b.textContent="Кончить";b.classList.remove("lockd")}}}
 function gameCanFinish(){if(gm==="p"&&Date.now()<lockEnd){toast(pick(TEASE));const b=$("#fbtn");if(b){b.classList.remove("shake");void b.offsetWidth;b.classList.add("shake")}return false}return true}
-function gameMark(r){if(gm==="c"){r.g="c";r.dur=gdur;r.lost=true}else if(gm==="p")r.g="p"}
+function gameMark(r){if(gm==="c"){r.g="c";r.dur=gdur;r.lost=true}else if(gm==="p")r.g="p";else if(gm==="k")r.g="k"}
 const resTitle=r=>r.win?(fem?"Выдержала!":"Выдержал!"):r.lost?(fem?"Не выдержала":"Не выдержал"):"Готово";
 function winChallenge(){if(finishing||view!=="show")return;gameStop();clearTimeout(timer);musicStop();const p=photos.find(p=>p.id===hist[pos]),r={id:String(Date.now()),ts:Date.now(),ms:Date.now()-t0,pid:hist[pos],url:p?p.url:"",seed:0,fx:false,g:"c",dur:gdur,win:true,ph:pick(fem?WINF:WINM)};
   const had=ACH.map(x=>x[2](recs())),all=recs();all.push(r);lsSet(RK,all);newAch=ACH.map((x,i)=>i).filter(i=>!had[i]&&ACH[i][2](all));pending=r;exitFs();replV("result");view="result";render()}
-function cmdShow(t){const e=$("#cmd");if(!e)return;e.textContent=t;e.classList.remove("on");void e.offsetWidth;e.classList.add("on")}
+function cmdShow(t){const e=$("#cmd");if(!e)return;e.textContent=t;e.classList.remove("on");void e.offsetWidth;e.classList.add("on");evInc("cmd")}
 function gameNew(){if(gm!=="k")return;
   if(gs.n>0){gs.n--;if(!gs.n)gs.mode="";return}
   if(shown>=3&&shown%4===0){const T=pick(["freeze","fast","slow"]);if(T==="freeze")gs.freeze=10;else{gs.mode=T;gs.n=T==="fast"?5:3}cmdShow(pick(CMDS[(fem?"f":"m")+role][T]))}}
@@ -39,8 +39,22 @@ function boss(){if(bossEl){unboss();return}
   for(let r=1;r<=26;r++)rows.push(h("tr",null,h("th",null,String(r)),...cols.map((c,i)=>h("td",null,i===0?names[r%6]:String(1000+(r*37+i*91)%9000)))));
   bossEl=h("div",{id:"boss"},h("div",{cls:"t",on:{dblclick:unboss}},"Квартальный отчёт 2026.xlsx — Таблицы"),h("div",{cls:"tb"},"Файл   Правка   Вид   Вставка   Формат   Данные   Инструменты"),
     h("table",null,h("tr",null,h("th"),...cols.map(c=>h("th",null,c))),...rows),h("button",{cls:"x",on:{click:unboss}},"↩ Вернуться"));
-  document.body.append(bossEl);pushV(view,{boss:1})}
+  document.body.append(bossEl);pushV(view,{boss:1});evInc("boss")}
 function unboss(){if(!bossEl)return;const H=hs();if(H&&H.state&&H.state.boss){H.back();return}closeBoss()}
 function closeBoss(){if(!bossEl)return;bossEl.remove();bossEl=null;document.title=bossTitle;
   if(bossT){const d=Date.now()-bossT;bossT=0;t0+=d;gEnd+=d;lockEnd+=d;if(view==="show"&&!finishing){showCur();if(apl.length)audioEl.play().catch(()=>{})}}}
 addEventListener("keydown",e=>{if(e.code==="KeyB"&&!e.ctrlKey&&!e.metaKey&&!e.altKey&&!/INPUT|TEXTAREA/.test((e.target&&e.target.tagName)||""))boss()});
+/* достижения за события и новые режимы */
+const ev=()=>ls("ss_ev",{}),cn=(a,f)=>a.filter(f).length;
+function evInc(k){const had=ACH.map(x=>x[2](recs())),e=ev();e[k]=(e[k]||0)+1;lsSet("ss_ev",e);const nw=ACH.map((x,i)=>i).filter(i=>!had[i]&&ACH[i][2](recs()));if(nw.length)toast("Достижение: "+nw.map(i=>AN(i)[2]+" "+AN(i)[0]).join(", "))}
+[["Усидчивый","Усидчивая","Выиграть «Не кончи» 3 раза","🪑",a=>cn(a,x=>x.win)>=3],["Гроссмейстер терпения","Мастер терпения","Выиграть «Не кончи» 10 раз","♟️",a=>cn(a,x=>x.win)>=10],
+["Неудачник","Неудачница","Проиграть «Не кончи» 5 раз","🤡",a=>cn(a,x=>x.lost)>=5],["Дрессированный","Дрессированная","Сессия в режиме «Терпение»","🐕",a=>a.some(x=>x.g==="p")],
+["Исполнительный","Исполнительная","Сессия в режиме «Команды»","🫡",a=>a.some(x=>x.g==="k")],["Вышколенный","Вышколенная","5 сессий в режиме «Команды»","🎖️",a=>cn(a,x=>x.g==="k")>=5],
+["Универсал","Универсалка","Сессии во всех трёх режимах игры","🎲",a=>["c","p","k"].every(g=>a.some(x=>x.g===g))],["Конспиратор","Конспираторша","Нажать «Босс идёт»","🕵️",()=>ev().boss>=1],
+["Параноик","Перестраховщица","Нажать «Босс идёт» 5 раз","😰",()=>ev().boss>=5],["Кинотеатр","Большой экран","Включить полноэкранный режим","🎬",()=>ev().fs>=1],
+["Архивариус","Архивистка","Сохранить записи в файл","🗄️",()=>ev().exp>=1],["Переселенец","Переселенка","Загрузить записи из файла","📦",()=>ev().imp>=1],
+["Бережливый","Бережливая","Сжать фото в настройках","🗜️",()=>ev().cmp>=1],["Настройщик","Настройщица","Поменять качество эффекта","🎛️",()=>ev().q>=1],
+["Двуликий","Двуликая","Побывать в обоих режимах сайта","🎭",()=>ev().vm>=1&&ev().vf>=1],["Установщик","Установщица","Установить сайт как приложение","📲",()=>ev().pwa>=1],
+["Мойдодыр","Хозяюшка","Вытереть жидкость 5 раз","🧼",()=>ev().wipe>=5],["Подчинённый","Подчинённая","Получить 10 команд","📣",()=>ev().cmd>=10]
+].forEach(([m,f,d,i,fn])=>{ACH.push([m,d,fn]);ICON[m]=i;ACHF.push([f,d,i])});
+setTimeout(()=>evInc(fem?"vf":"vm"),1500);
