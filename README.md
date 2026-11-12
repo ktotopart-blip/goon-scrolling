@@ -6,7 +6,7 @@
 
 ## Русский
 
-Слайдшоу с фотографиями, интересными подписями, скрытым секундомером, календарём, статистикой и достижениями. Сайт работает прямо в браузере.
+Слайдшоу с фотографиями, возбуждающими подписями, скрытым секундомером, календарём, статистикой и достижениями.
 
 ### Как пользоваться
 
@@ -20,6 +20,7 @@
 ### Возможности
 
 - **Слайдшоу.** Случайный порядок без повторов, настраиваемый интервал, полоса времени до смены кадра, шуточные подписи на каждом 3-м и 5-м фото. Следующие фото подгружаются заранее, чтобы не зависать.
+- **Полноэкранный режим.** Кнопка «На весь экран» в слайдшоу разворачивает фото на весь экран, кнопки «Назад», «Кончить» и «Выйти» остаются на виду. Выход: «Свернуть» или Esc.
 - **Скрытый секундомер.** Идёт с начала показа, результат видно после «Кончить».
 - **Эффект жидкости.** Белая жидкость выстреливает снизу и разбрызгивается по фото. Форма брызг каждый раз разная. Кнопка **«Вытереться»** на экране результата стирает жидкость с фото.
 - **Календарь.** Дни с записями выделены фиолетовым, можно листать месяцы, открывать закреплённые фото и удалять записи. У каждой записи есть переключатель **«Брызги»**, который включает и выключает жидкость на её фото.
@@ -27,6 +28,7 @@
 - **Статистика.** Всего записей, за сегодня, за 7 дней, среднее и общее время, лучшее время, график последних 7 дней, любимое фото.
 - **Достижения.** 27 значков за разные сессии (быстрые, долгие, ночные, серии дней, число записей и другие). При получении нового достижения появляется сообщение.
 - **Поделиться.** Отправляет фото и результат секундомера друзьям. На телефоне открывается системное меню, на компьютере копируется текст со ссылкой.
+- **Настройки.** Качество эффекта (высокое, среднее, низкое) и переключатель частиц для слабых телефонов, экспорт и импорт записей в файл, установка сайта как приложения на главный экран, сжатие фото перед загрузкой, сброс подтверждения 18+.
 - **Оформление.** Тёмная и светлая тема в зависимости от настроек устройства, плавающие частицы. Анимации отключаются, если в системе включено «уменьшить движение».
 
 ### Режим для девушек
@@ -35,7 +37,7 @@
 
 ### Ваши данные
 
-Календарь, записи секундомера, статистика, достижения, выбранный интервал и настройка музыки хранятся только в вашем браузере. Они не передаются на сервер и не видны другим людям. Если очистить данные браузера или открыть сайт на другом устройстве, записи не сохранятся.
+Календарь, записи секундомера, статистика, достижения, выбранный интервал и настройка музыки хранятся только в вашем браузере. Они не передаются на сервер и не видны другим людям. Чтобы перенести их на другое устройство или не потерять при очистке данных, сохраните файл кнопкой «Экспорт» в настройках и загрузите его кнопкой «Импорт». Без этого записи не переносятся.
 
 ### Полезно знать
 
@@ -49,7 +51,7 @@
 
 ## English
 
-A photo slideshow with interesting captions, a hidden stopwatch, a calendar, statistics and achievements. The site runs entirely in your browser.
+A photo slideshow for adults (18+) with playful captions, a hidden stopwatch, a calendar, statistics and achievements. The site runs entirely in your browser.
 
 ### How to use
 
@@ -63,6 +65,7 @@ A photo slideshow with interesting captions, a hidden stopwatch, a calendar, sta
 ### Features
 
 - **Slideshow.** Random order without repeats, adjustable interval, a progress line until the next photo, playful captions on every 3rd and 5th photo. Upcoming photos are preloaded to avoid stalls.
+- **Fullscreen mode.** The "На весь экран" (Fullscreen) button in the slideshow expands the photo to the full screen while the Back, "Кончить" and Exit buttons stay visible. Leave with "Свернуть" (Collapse) or Esc.
 - **Hidden stopwatch.** Runs from the start of the show; the result is shown after "Кончить".
 - **Liquid effect.** White liquid shoots from the bottom and splashes across the photo. The splash shape is different every time. The **"Вытереться"** (Wipe off) button on the result screen wipes the liquid off the photo.
 - **Calendar.** Days with entries are highlighted in purple; you can browse months, reopen pinned photos and delete entries. Each entry has a **"Брызги"** (Splash) switch that turns the liquid on or off for that photo.
@@ -70,6 +73,7 @@ A photo slideshow with interesting captions, a hidden stopwatch, a calendar, sta
 - **Statistics.** Total entries, today, last 7 days, average and total time, best time, a 7-day chart, favorite photo.
 - **Achievements.** 27 badges for different sessions (fast, long, late-night, day streaks, number of entries and more). A message appears when you unlock a new one.
 - **Share.** Sends the photo and stopwatch result to friends. On phones it opens the system share sheet; on desktop it copies text with a link.
+- **Settings.** Effect quality (high, medium, low) and a particles switch for weak phones, export and import of records to a file, installing the site as an app on the home screen, photo compression before uploading, resetting the 18+ confirmation.
 - **Look and feel.** Dark and light themes following your device settings, floating particles. Animations are turned off if "reduce motion" is enabled in your system.
 
 ### Mode for girls
@@ -78,7 +82,7 @@ The **"Открыть режим для девушек ↗"** button on the home
 
 ### Your data
 
-The calendar, stopwatch records, statistics, achievements, the selected interval and the music setting are stored only in your browser. They are not sent to a server and are not visible to anyone else. If you clear browser data or open the site on another device, the records will not carry over.
+The calendar, stopwatch records, statistics, achievements, the selected interval and the music setting are stored only in your browser. They are not sent to a server and are not visible to anyone else. To move them to another device or keep them after clearing browser data, save a file with the "Экспорт" (Export) button in Settings and load it with "Импорт" (Import). Without this, records do not carry over.
 
 ### Good to know
 
