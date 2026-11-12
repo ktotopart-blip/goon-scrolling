@@ -6,12 +6,12 @@
 
 ## Русский
 
-Слайдшоу с фотографиями, хорни подписями, скрытым секундомером, календарём, статистикой и достижениями. Сайт работает прямо в браузере.
+Слайдшоу с фотографиями, шуточными подписями, скрытым секундомером, календарём, статистикой и достижениями. Сайт работает прямо в браузере.
 
 ### Как пользоваться
 
 1. На главной странице выберите интервал смены фото ползунком: от 1 секунды до 1 минуты.
-2. При желании включите переключатель **«Музыка во время слайдшоу»** (виден, если на сайте есть аудио).
+2. При желании включите переключатель **«Стоны»** (виден, если на сайте есть аудио).
 3. Нажмите **«Начать»**. Фото идут в случайном порядке и не повторяются, пока не покажутся все.
 4. Кнопка **«← Назад»** возвращает к предыдущему фото. Кнопка **«Выйти»** возвращает на главную без записи.
 5. Когда захотите закончить, нажмите **«Кончить»**. Показ остановится, на фото выстрелит белая жидкость, появится фраза, а затем экран с результатом секундомера, который шёл скрытно с момента старта.
@@ -28,14 +28,15 @@
 - **Календарь.** Дни с записями выделены фиолетовым, можно листать месяцы, открывать закреплённые фото и удалять записи. У каждой записи есть переключатель **«Брызги»**, который включает и выключает жидкость на её фото.
 - **Рекорды.** Пять самых быстрых и пять самых долгих сессий.
 - **Статистика.** Всего записей, за сегодня, за 7 дней, среднее и общее время, лучшее время, график последних 7 дней, любимое фото.
-- **Достижения.** 27 значков за разные сессии (быстрые, долгие, ночные, серии дней, число записей и другие). При получении нового достижения появляется сообщение.
+- **Достижения.** 48 значков за разные сессии (быстрые, долгие, ночные, серии дней, число записей и другие). При получении нового достижения появляется сообщение.
 - **Поделиться.** Отправляет фото и результат секундомера друзьям. На телефоне открывается системное меню, на компьютере копируется текст со ссылкой.
 - **Настройки.** Качество эффекта (высокое, среднее, низкое) и переключатель частиц для слабых телефонов, экспорт и импорт записей в файл, установка сайта как приложения на главный экран, сжатие фото перед загрузкой, сброс подтверждения 18+.
+- **Кнопка «Назад».** Системная кнопка «Назад» работает внутри сайта: возвращает с календаря, настроек и других страниц на главную, закрывает открытое фото и страницу «Босс идёт», выходит из слайдшоу. Так же она возвращает между режимами для парней и для девушек.
 - **Оформление.** Тёмная и светлая тема в зависимости от настроек устройства, плавающие частицы. Анимации отключаются, если в системе включено «уменьшить движение».
 
 ### Режим для девушек
 
-На главной странице кнопка **«Открыть режим для девушек ↗»** открывает сайт в новой вкладке. Функции те же, но вместо белой жидкости брызгает вода, подписи звучат в женском роде, а достижения имеют свои названия. Фото берутся из папки `photos_f`, музыка из `audio_f`. Календарь и записи в этом режиме хранятся отдельно. Блок **«Голос»** переключает, от чьего лица звучат подписи: в обычном режиме это девушка (обычная, доминантная или послушная), в режиме для девушек это мужчина (доминантный или послушный).
+На главной странице кнопка **«Перейти в режим для девушек»** переключает сайт в этот режим (кнопка браузера «Назад» вернёт обратно). Функции те же, но вместо белой жидкости брызгает вода, подписи звучат в женском роде, а достижения имеют свои названия. Фото берутся из папки `photos_f`, музыка из `audio_f`. Календарь и записи в этом режиме хранятся отдельно. Блок **«Голос»** переключает, от чьего лица звучат подписи: в обычном режиме это девушка (обычная, доминантная или послушная), в режиме для девушек это мужчина (доминантный или послушный).
 
 ### Ваши данные
 
@@ -58,7 +59,7 @@ A photo slideshow for adults (18+) with horny captions, a hidden stopwatch, a ca
 ### How to use
 
 1. On the home page, choose the photo interval with the slider: from 1 second to 1 minute.
-2. Optionally turn on the **"Музыка во время слайдшоу"** (Music during the slideshow) switch (shown when the site has audio).
+2. Optionally turn on the **"Стоны"** (Sounds) switch (shown when the site has audio).
 3. Press **"Начать"** (Start). Photos appear in random order and none repeats until all have been shown.
 4. **"← Назад"** (Back) returns to the previous photo. **"Выйти"** (Exit) returns to the home page without saving a record.
 5. When you want to finish, press **"Кончить"** (Cum). The show stops, white liquid shoots onto the photo, a phrase appears, and then the result screen shows the time from the stopwatch that ran silently since the start.
@@ -75,14 +76,15 @@ A photo slideshow for adults (18+) with horny captions, a hidden stopwatch, a ca
 - **Calendar.** Days with entries are highlighted in purple; you can browse months, reopen pinned photos and delete entries. Each entry has a **"Брызги"** (Splash) switch that turns the liquid on or off for that photo.
 - **Records.** The five fastest and five longest sessions.
 - **Statistics.** Total entries, today, last 7 days, average and total time, best time, a 7-day chart, favorite photo.
-- **Achievements.** 27 badges for different sessions (fast, long, late-night, day streaks, number of entries and more). A message appears when you unlock a new one.
+- **Achievements.** 48 badges for different sessions (fast, long, late-night, day streaks, number of entries and more). A message appears when you unlock a new one.
 - **Share.** Sends the photo and stopwatch result to friends. On phones it opens the system share sheet; on desktop it copies text with a link.
 - **Settings.** Effect quality (high, medium, low) and a particles switch for weak phones, export and import of records to a file, installing the site as an app on the home screen, photo compression before uploading, resetting the 18+ confirmation.
+- **Back button.** The system Back button works inside the site: it returns from the calendar, settings and other pages to the home page, closes an opened photo and the "Босс идёт" page, and leaves the slideshow. It also returns between the mode for boys and the mode for girls.
 - **Look and feel.** Dark and light themes following your device settings, floating particles. Animations are turned off if "reduce motion" is enabled in your system.
 
 ### Mode for girls
 
-The **"Открыть режим для девушек ↗"** button on the home page opens the site in a new tab. The functions are the same, but water sprays instead of white liquid, captions use feminine forms, and achievements have their own names. Photos come from the `photos_f` folder, music from `audio_f`. The calendar and records of this mode are stored separately. The **"Голос"** (Voice) block chooses who is speaking in the captions: in the regular mode it is a girl (regular, dominant or submissive), in the mode for girls it is a man (dominant or submissive).
+The **"Перейти в режим для девушек"** button on the home page switches the site to that mode (the browser's Back button returns you). The functions are the same, but water sprays instead of white liquid, captions use feminine forms, and achievements have their own names. Photos come from the `photos_f` folder, music from `audio_f`. The calendar and records of this mode are stored separately. The **"Голос"** (Voice) block chooses who is speaking in the captions: in the regular mode it is a girl (regular, dominant or submissive), in the mode for girls it is a man (dominant or submissive).
 
 ### Your data
 
