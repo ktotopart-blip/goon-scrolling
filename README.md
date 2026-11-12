@@ -6,7 +6,7 @@
 
 ## Русский
 
-Слайдшоу с фотографиями, возбуждающими подписями, скрытым секундомером, календарём, статистикой и достижениями.
+Слайдшоу с фотографиями, хорни подписями, скрытым секундомером, календарём, статистикой и достижениями. Сайт работает прямо в браузере.
 
 ### Как пользоваться
 
@@ -20,6 +20,8 @@
 ### Возможности
 
 - **Слайдшоу.** Случайный порядок без повторов, настраиваемый интервал, полоса времени до смены кадра, шуточные подписи на каждом 3-м и 5-м фото. Следующие фото подгружаются заранее, чтобы не зависать.
+- **Режимы игры.** «Не кончи» (таймер на 1, 3 или 5 минут: нажмёшь «Кончить» раньше, проиграешь), «Терпение» (кнопка «Кончить» заблокирована на случайное время) и «Команды» (приказы на экране: замри, быстрее, медленнее). Для режимов есть свои достижения.
+- **Босс идёт.** Кнопка «Босс идёт» (в слайдшоу «Босс!», на компьютере клавиша B) мгновенно прячет сайт за страницей с таблицей. Возврат: кнопка «↩ Вернуться» в углу или двойной клик по заголовку. Показ и таймер ставятся на паузу.
 - **Полноэкранный режим.** Кнопка «На весь экран» в слайдшоу разворачивает фото на весь экран, кнопки «Назад», «Кончить» и «Выйти» остаются на виду. Выход: «Свернуть» или Esc.
 - **Скрытый секундомер.** Идёт с начала показа, результат видно после «Кончить».
 - **Эффект жидкости.** Белая жидкость выстреливает снизу и разбрызгивается по фото. Форма брызг каждый раз разная. Кнопка **«Вытереться»** на экране результата стирает жидкость с фото.
@@ -51,7 +53,7 @@
 
 ## English
 
-A photo slideshow for adults (18+) with playful captions, a hidden stopwatch, a calendar, statistics and achievements. The site runs entirely in your browser.
+A photo slideshow for adults (18+) with horny captions, a hidden stopwatch, a calendar, statistics and achievements. The site runs entirely in your browser.
 
 ### How to use
 
@@ -65,6 +67,8 @@ A photo slideshow for adults (18+) with playful captions, a hidden stopwatch, a 
 ### Features
 
 - **Slideshow.** Random order without repeats, adjustable interval, a progress line until the next photo, playful captions on every 3rd and 5th photo. Upcoming photos are preloaded to avoid stalls.
+- **Game modes.** "Не кончи" (a 1, 3 or 5 minute timer: pressing "Кончить" early means you lose), "Терпение" (the "Кончить" button is locked for a random time) and "Команды" (on-screen orders: freeze, faster, slower). The modes have their own achievements.
+- **Boss is coming.** The "Босс идёт" button ("Босс!" in the slideshow, the B key on desktop) instantly hides the site behind a spreadsheet page. Return with the "↩ Вернуться" button in the corner or by double-clicking the title. The show and the timer are paused.
 - **Fullscreen mode.** The "На весь экран" (Fullscreen) button in the slideshow expands the photo to the full screen while the Back, "Кончить" and Exit buttons stay visible. Leave with "Свернуть" (Collapse) or Esc.
 - **Hidden stopwatch.** Runs from the start of the show; the result is shown after "Кончить".
 - **Liquid effect.** White liquid shoots from the bottom and splashes across the photo. The splash shape is different every time. The **"Вытереться"** (Wipe off) button on the result screen wipes the liquid off the photo.
