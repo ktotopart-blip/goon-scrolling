@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1040" height="918" viewBox="0 0 1040 918">
+  <title>Редактируемые буквы — пастельное северное сияние</title>
+  <desc>Каждый символ — отдельный редактируемый SVG text-элемент. Градиент от пастельно-жёлтого к светло-зелёному.</desc>
+  <defs>
+    <linearGradient id="auroraPastel" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F8F0B2"/>
+      <stop offset="48%" stop-color="#DDF0B9"/>
+      <stop offset="100%" stop-color="#A9DDBD"/>
+    </linearGradient>
+  </defs>
+  <rect width="100%" height="100%" fill="#17201C"/>
+  <text x="48" y="48" fill="#E6EBDD" font-family="Inter, Arial, sans-serif" font-size="24" font-weight="600">Пастельное северное сияние</text>
+  <text x="48" y="76" fill="#B8C5B9" font-family="Inter, Arial, sans-serif" font-size="14">SVG • каждый символ редактируется отдельно</text>
+  <text id="char-01-0410" x="107.0" y="172" text-anchor="middle" font-family="Arial, DejaVu Sans, sans-serif" font-size="76" font-weight="500" fill="url(#auroraPastel)">А</text>
+  <text id="char-02-0411" x="225.0" y="172" text-anchor="middle" font-family="Arial, DejaVu Sans, sans-serif" font-size="76" font-weight="500" fill="url(#auroraPastel)">Б</text>
+  <text id="char-03-0412" x="343.0" y="172" text-anchor="middle" font-family="Arial, DejaVu Sans, sans-serif" font-size="76" font-weight="500" fill="url(#auroraPastel)">В</text>
+  <text id="char-04-0413" x="461.0" y="172" text-anchor="middle" font-family="Arial, DejaVu Sans, sans-serif" font-size="76" font-weight="500" fill="url(#auroraPastel)">Г</text>
+  <text id="char-05-0414" x="579.0" y="172" text-anchor="middle" font-family="Arial, DejaVu Sans, sans-serif" font-size="76" font-weight="500" fill="url(#auroraPastel)">Д</text>
+  <text id="char-06-0415" x="697.0" y="172" text-anchor="middle" font-family="Arial, DejaVu Sans, sans-serif" font-size="76" font-weight="500" fill="url(#auroraPastel)">Е</text>
+  <text id="char-07-0401" x="815.0" y="172" text-anchor="middle" font-family="Arial, DejaVu Sans, sans-serif" font-size="76" font-weight="500" fill="url(#auroraPastel)">Ё</text>
+  <text id="char-08-0416" x="933.0" y="172" text-anchor="middle" font-family="Arial, DejaVu Sans, sans-serif" font-size="76" font-weight="500" fill="url(#auroraPastel)">Ж</text>
+  <text id="char-09-0417" x="107.0" y="298" text-anchor="middle" font-family="Arial, DejaVu Sans, sans-serif" font-size="76" font-weight="500" fill="url(#auroraPastel)">З</text>
+  <text id="char-10-0418" x="225.0" y="298" text-anchor="middle" font-family="Arial, DejaVu Sans, sans-serif" font-size="76" font-weight="500" fill="url(#auroraPastel)">И</text>
+  <text id="char-11-0419" x="343.0" y="298" text-anchor="middle" font-family="Arial, DejaVu Sans, sans-serif" font-size="76" font-weight="500" fill="url(#auroraPastel)">Й</text>
+  <text id="char-12-041a" x="461.0" y="298" text-anchor="middle" font-family="Arial, DejaVu Sans, sans-serif" font-size="76" font-weight="500" fill="url(#auroraPastel)">К</text>
+  <text id="char-13-041b" x="579.0" y="298" text-anchor="middle" font-family="Arial, DejaVu Sans, sans-serif" font-size="76" font-weight="500" fill="url(#auroraPastel)">Л</text>
+  <text id="char-14-041c" x="697.0" y="298" text-anchor="middle" font-family="Arial, DejaVu Sans, sans-serif" font-size="76" font-weight="500" fill="url(#auroraPastel)">М</text>
+  <text id="char-15-041d" x="815.0" y="298" text-anchor="middle" font-family="Arial, DejaVu Sans, sans-serif" font-size="76" font-weight="500" fill="url(#auroraPastel)">Н</text>
+  <text id="char-16-041e" x="933.0" y="298" text-anchor="middle" font-family="Arial, DejaVu Sans, sans-serif" font-size="76" font-weight="500" fill="url(#auroraPastel)">О</text>
+  <text id="char-17-041f" x="107.0" y="424" text-anchor="middle" font-family="Arial, DejaVu Sans, sans-serif" font-size="76" font-weight="500" fill="url(#auroraPastel)">П</text>
+  <text id="char-18-0420" x="225.0" y="424" text-anchor="middle" font-family="Arial, DejaVu Sans, sans-serif" font-size="76" font-weight="500" fill="url(#auroraPastel)">Р</text>
+  <text id="char-19-0421" x="343.0" y="424" text-anchor="middle" font-family="Arial, DejaVu Sans, sans-serif" font-size="76" font-weight="500" fill="url(#auroraPastel)">С</text>
+  <text id="char-20-0422" x="461.0" y="424" text-anchor="middle" font-family="Arial, DejaVu Sans, sans-serif" font-size="76" font-weight="500" fill="url(#auroraPastel)">Т</text>
+  <text id="char-21-0423" x="579.0" y="424" text-anchor="middle" font-family="Arial, DejaVu Sans, sans-serif" font-size="76" font-weight="500" fill="url(#auroraPastel)">У</text>
+  <text id="char-22-0424" x="697.0" y="424" text-anchor="middle" font-family="Arial, DejaVu Sans, sans-serif" font-size="76" font-weight="500" fill="url(#auroraPastel)">Ф</text>
+  <text id="char-23-0425" x="815.0" y="424" text-anchor="middle" font-family="Arial, DejaVu Sans, sans-serif" font-size="76" font-weight="500" fill="url(#auroraPastel)">Х</text>
+  <text id="char-24-0426" x="933.0" y="424" text-anchor="middle" font-family="Arial, DejaVu Sans, sans-serif" font-size="76" font-weight="500" fill="url(#auroraPastel)">Ц</text>
+  <text id="char-25-0427" x="107.0" y="550" text-anchor="middle" font-family="Arial, DejaVu Sans, sans-serif" font-size="76" font-weight="500" fill="url(#auroraPastel)">Ч</text>
+  <text id="char-26-0428" x="225.0" y="550" text-anchor="middle" font-family="Arial, DejaVu Sans, sans-serif" font-size="76" font-weight="500" fill="url(#auroraPastel)">Ш</text>
+  <text id="char-27-0429" x="343.0" y="550" text-anchor="middle" font-family="Arial, DejaVu Sans, sans-serif" font-size="76" font-weight="500" fill="url(#auroraPastel)">Щ</text>
+  <text id="char-28-042a" x="461.0" y="550" text-anchor="middle" font-family="Arial, DejaVu Sans, sans-serif" font-size="76" font-weight="500" fill="url(#auroraPastel)">Ъ</text>
+  <text id="char-29-042b" x="579.0" y="550" text-anchor="middle" font-family="Arial, DejaVu Sans, sans-serif" font-size="76" font-weight="500" fill="url(#auroraPastel)">Ы</text>
+  <text id="char-30-042c" x="697.0" y="550" text-anchor="middle" font-family="Arial, DejaVu Sans, sans-serif" font-size="76" font-weight="500" fill="url(#auroraPastel)">Ь</text>
+  <text id="char-31-042d" x="815.0" y="550" text-anchor="middle" font-family="Arial, DejaVu Sans, sans-serif" font-size="76" font-weight="500" fill="url(#auroraPastel)">Э</text>
+  <text id="char-32-042e" x="933.0" y="550" text-anchor="middle" font-family="Arial, DejaVu Sans, sans-serif" font-size="76" font-weight="500" fill="url(#auroraPastel)">Ю</text>
+  <text id="char-33-042f" x="107.0" y="676" text-anchor="middle" font-family="Arial, DejaVu Sans, sans-serif" font-size="76" font-weight="500" fill="url(#auroraPastel)">Я</text>
+  <text id="char-34-0030" x="225.0" y="676" text-anchor="middle" font-family="Arial, DejaVu Sans, sans-serif" font-size="76" font-weight="500" fill="url(#auroraPastel)">0</text>
+  <text id="char-35-0031" x="343.0" y="676" text-anchor="middle" font-family="Arial, DejaVu Sans, sans-serif" font-size="76" font-weight="500" fill="url(#auroraPastel)">1</text>
+  <text id="char-36-0032" x="461.0" y="676" text-anchor="middle" font-family="Arial, DejaVu Sans, sans-serif" font-size="76" font-weight="500" fill="url(#auroraPastel)">2</text>
+  <text id="char-37-0033" x="579.0" y="676" text-anchor="middle" font-family="Arial, DejaVu Sans, sans-serif" font-size="76" font-weight="500" fill="url(#auroraPastel)">3</text>
+  <text id="char-38-0034" x="697.0" y="676" text-anchor="middle" font-family="Arial, DejaVu Sans, sans-serif" font-size="76" font-weight="500" fill="url(#auroraPastel)">4</text>
+  <text id="char-39-0035" x="815.0" y="676" text-anchor="middle" font-family="Arial, DejaVu Sans, sans-serif" font-size="76" font-weight="500" fill="url(#auroraPastel)">5</text>
+  <text id="char-40-0036" x="933.0" y="676" text-anchor="middle" font-family="Arial, DejaVu Sans, sans-serif" font-size="76" font-weight="500" fill="url(#auroraPastel)">6</text>
+  <text id="char-41-0037" x="107.0" y="802" text-anchor="middle" font-family="Arial, DejaVu Sans, sans-serif" font-size="76" font-weight="500" fill="url(#auroraPastel)">7</text>
+  <text id="char-42-0038" x="225.0" y="802" text-anchor="middle" font-family="Arial, DejaVu Sans, sans-serif" font-size="76" font-weight="500" fill="url(#auroraPastel)">8</text>
+  <text id="char-43-0039" x="343.0" y="802" text-anchor="middle" font-family="Arial, DejaVu Sans, sans-serif" font-size="76" font-weight="500" fill="url(#auroraPastel)">9</text>
+</svg>
