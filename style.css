@@ -129,3 +129,11 @@ button.ar{flex:none;width:44px;height:44px;min-height:44px;padding:0;border-radi
 .legend{display:flex;align-items:center;gap:14px;margin-top:14px;font-size:13px;color:var(--mut);flex-wrap:wrap}.legend span{display:flex;align-items:center;gap:6px}
 .lg{width:10px;height:10px;border-radius:3px;display:inline-block}.lg.a{background:linear-gradient(135deg,#9b6cff,#6d3bff)}.lg.b{box-shadow:inset 0 0 0 2px var(--lil)}
 button.tdy{margin-left:auto;min-height:36px;padding:6px 14px;font-size:13px;border-radius:12px}
+/* защита фото и полный экран */
+body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}input,textarea{-webkit-user-select:text;user-select:text}
+img,canvas{-webkit-user-drag:none}.pw{cursor:pointer}#bar,#cmd,#fin,.spl{z-index:2}
+.in{width:100%;margin-top:8px;padding:11px 14px;border-radius:12px;border:1px solid var(--bd);background:rgba(255,255,255,.05);color:var(--fg);font:600 15px Manrope,sans-serif}
+@media print{body>*{display:none!important}}
+body.fsm #fx{display:none}
+#sv.fs{height:100vh;height:100dvh}#sv.fs>*{transition:opacity .45s}#sv.fs.idle>:not(#stage):not(#cap):not(#gstat){opacity:.28}
+#stage img{will-change:opacity}

@@ -26,7 +26,7 @@ function gameCanFinish(){if(gm==="p"&&Date.now()<lockEnd){toast(pick(TEASE));con
 function gameMark(r){if(gm==="c"){r.g="c";r.dur=gdur;r.lost=true}else if(gm==="p")r.g="p";else if(gm==="k")r.g="k"}
 const resTitle=r=>r.win?(fem?"Выдержала!":"Выдержал!"):r.lost?(fem?"Не выдержала":"Не выдержал"):"Готово";
 function winChallenge(){if(finishing||view!=="show")return;gameStop();clearTimeout(timer);musicStop();const p=photos.find(p=>p.id===hist[pos]),r={id:String(Date.now()),ts:Date.now(),ms:Date.now()-t0,pid:hist[pos],url:p?p.url:"",seed:0,fx:false,g:"c",dur:gdur,win:true,ph:pick(fem?WINF:WINM)};
-  const had=ACH.map(x=>x[2](recs())),all=recs();all.push(r);lsSet(RK,all);newAch=ACH.map((x,i)=>i).filter(i=>!had[i]&&ACH[i][2](all));pending=r;exitFs();replV("result");view="result";render()}
+  const had=ACH.map(x=>x[2](recs())),all=recs();all.push(r);lsSet(RK,all);newAch=ACH.map((x,i)=>i).filter(i=>!had[i]&&ACH[i][2](all));pending=r;wlOff();exitFs();replV("result");view="result";render()}
 function cmdShow(t){const e=$("#cmd");if(!e)return;e.textContent=t;e.classList.remove("on");void e.offsetWidth;e.classList.add("on");evInc("cmd")}
 function gameNew(){if(gm!=="k")return;
   if(gs.n>0){gs.n--;if(!gs.n)gs.mode="";return}

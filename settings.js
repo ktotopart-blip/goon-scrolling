@@ -10,21 +10,21 @@ async function importData(f){if(!f)return;try{const d=JSON.parse(await f.text())
   toast("Импортировано записей: "+add);evInc("imp");if(window.fxResize)fxResize();render()}catch(e){toast("Файл не подходит")}}
 function loadZip(){return window.JSZip?Promise.resolve():new Promise((ok,no)=>{const s=document.createElement("script");s.src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js";s.onload=ok;s.onerror=no;document.head.append(s)})}
 function compressCard(){
-  let q=85,mx=1920,res=[];const info=h("div",{cls:"mut res"}),list=h("div",{cls:"res"}),acts=h("div",{cls:"row",style:"margin-top:10px"}),inp=h("input",{type:"file",accept:"image/*",multiple:"multiple",style:"display:none"});
+  let q=85,mx=1920,res=[];const wmI=h("input",{type:"text",cls:"in",value:CFG.wm,maxlength:"40","aria-label":"Текст водяного знака"}),wmC=h("input",{type:"checkbox",checked:"checked",style:"flex:none;width:20px;height:20px","aria-label":"Водяной знак"});const info=h("div",{cls:"mut res"}),list=h("div",{cls:"res"}),acts=h("div",{cls:"row",style:"margin-top:10px"}),inp=h("input",{type:"file",accept:"image/*",multiple:"multiple",style:"display:none"});
   const qs=h("input",{type:"range",min:60,max:95,value:q}),ql=h("b",null,q+"%"),ms=h("input",{type:"range",min:800,max:3000,step:100,value:mx}),ml=h("b",null,mx+" px");
   qs.addEventListener("input",()=>{q=+qs.value;ql.textContent=q+"%"});ms.addEventListener("input",()=>{mx=+ms.value;ml.textContent=mx+" px"});
   const kb=n=>Math.round(n/1024)+" КБ";
   inp.addEventListener("change",async()=>{const fs=[...inp.files];res=[];list.replaceChildren();acts.replaceChildren();
     for(let i=0;i<fs.length;i++){info.textContent="Сжимаю "+(i+1)+" из "+fs.length+"…";
       try{const bm=await createImageBitmap(fs[i],{imageOrientation:"from-image"}).catch(()=>createImageBitmap(fs[i])),k=Math.min(1,mx/Math.max(bm.width,bm.height)),c=document.createElement("canvas");c.width=Math.round(bm.width*k);c.height=Math.round(bm.height*k);c.getContext("2d").drawImage(bm,0,0,c.width,c.height);
-        const bl=await new Promise(r=>c.toBlob(r,"image/jpeg",q/100)),nm=(fs[i].name.replace(/\.[^.]+$/,"").replace(/[^A-Za-z0-9_-]+/g,"_")||"photo")+"_"+(i+1)+".jpg";
+        if(wmC.checked)drawWM(c.getContext("2d"),c.width,c.height,wmI.value||CFG.wm);const bl=await new Promise(r=>c.toBlob(r,"image/jpeg",q/100)),nm=(fs[i].name.replace(/\.[^.]+$/,"").replace(/[^A-Za-z0-9_-]+/g,"_")||"photo")+"_"+(i+1)+".jpg";
         res.push({name:nm,blob:bl});list.append(h("div",null,nm+": "+kb(fs[i].size)+" → "+kb(bl.size)))}catch(e){list.append(h("div",null,fs[i].name+": не удалось обработать"))}}
     info.textContent=res.length?"Готово: "+res.length+" фото. Загрузите их в папку фото на GitHub.":"Нет подходящих файлов";
     if(res.length)evInc("cmp");
     if(res.length)acts.append(h("button",{on:{click:async()=>{for(const r of res){dl(r.blob,r.name);await new Promise(o=>setTimeout(o,500))}}}},"Скачать по очереди"),h("button",{on:{click:async()=>{try{await loadZip();const z=new JSZip();res.forEach(r=>z.file(r.name,r.blob));dl(await z.generateAsync({type:"blob"}),"photos.zip")}catch(e){toast("ZIP недоступен, скачайте по очереди")}}}},"Скачать ZIP"))});
-  return h("div",{cls:"card"},h("h2",null,"Сжатие фото"),h("div",{cls:"mut",style:"margin-bottom:8px"},"Уменьшает вес фото перед загрузкой на GitHub, чтобы сайт работал быстрее."),
+  return h("div",{cls:"card"},h("h2",null,"Сжатие фото"),h("div",{cls:"mut",style:"margin-bottom:8px"},"Уменьшает вес фото, убирает данные съёмки (в том числе геометку) и наносит водяной знак. Загружайте на GitHub уже обработанные копии, а оригиналы храните у себя."),
     h("div",{cls:"row",style:"justify-content:space-between"},h("span",null,"Качество"),ql),qs,h("div",{cls:"row",style:"justify-content:space-between"},h("span",null,"Макс. сторона"),ml),ms,
-    h("button",{cls:"p",style:"width:100%;margin-top:10px",on:{click:()=>inp.click()}},"Выбрать фото"),inp,info,list,acts)}
+    h("label",{cls:"row",style:"gap:10px;flex-wrap:nowrap;margin-top:12px"},wmC,h("span",{style:"flex:1"},"Нанести водяной знак")),wmI,h("button",{cls:"p",style:"width:100%;margin-top:10px",on:{click:()=>inp.click()}},"Выбрать фото"),inp,info,list,acts)}
 function settings(){
   const q=ls("ss_q","high"),pa=ls("ss_part",true),inp=h("input",{type:"file",accept:"application/json,.json",style:"display:none"});
   inp.addEventListener("change",()=>{importData(inp.files[0]);inp.value=""});

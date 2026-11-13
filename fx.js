@@ -47,7 +47,7 @@ function drawSplats(c,w,h,S,t){
   (fem?[["rgba(170,215,250,.4)",1],["rgba(215,238,255,.45)",2],["rgba(255,255,255,.75)",3]]:[["#e4eaf6",1],["#f3f5fb",2],["#ffffff",3]]).forEach(([col,i])=>{c.save();c.translate(-i*w/600,-i*w/480);c.shadowColor=col;c.shadowBlur=w/120*i;c.fillStyle=col;c.fill(P[i],"evenodd");c.restore()});
   c.restore();if(fem){c.strokeStyle="rgba(255,255,255,.8)";c.lineWidth=Math.max(1,w/380);c.stroke(P[0])}}
 function paintSplash(cv,im,r){const on=r&&r.fx&&r.seed&&im.clientWidth;cv.style.display=on?"block":"none";if(!on)return;sizeOver(cv,im);drawSplats(cv.getContext("2d"),cv.width,cv.height,mkSplats(r.seed),1.1)}
-function withSplash(r,cls,click){const im=h("img",{src:urlOf(r),alt:"",loading:"lazy",decoding:"async",on:{click}}),cv=h("canvas",{cls:"spl"}),p=()=>paintSplash(cv,im,r);im.addEventListener("load",p);if(window.ResizeObserver)new ResizeObserver(p).observe(im);return h("div",{cls:"pw "+cls},im,cv)}
+function withSplash(r,cls,click){const im=h("img",{src:urlOf(r),alt:"",loading:"lazy",decoding:"async"}),cv=h("canvas",{cls:"spl"}),p=()=>paintSplash(cv,im,r);im.addEventListener("load",p);if(window.ResizeObserver)new ResizeObserver(p).observe(im);return h("div",{cls:"pw "+cls,on:{click}},im,cv)}
 function wipe(cv,done){const c=cv&&cv.getContext("2d"),w=cv?cv.width:0,hh=cv?cv.height:0;if(!w){done();return}
   c.globalCompositeOperation="destination-out";const T=RM?1:1400,t0=performance.now();let px=0;
   (function f(now){const p=Math.min(1,(now-t0)/T);for(let q=px;q<=p;q+=.004){c.beginPath();c.arc(q*w*1.2-.1*w,hh*(.5+.5*Math.sin(q*16)),hh*.4,0,6.283);c.fill()}px=p;if(p<1)requestAnimationFrame(f);else{c.globalCompositeOperation="source-over";done()}})(t0)}
