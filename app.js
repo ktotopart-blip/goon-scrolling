@@ -2,7 +2,7 @@ function ask(msg,yes){const o=h("div",{style:"position:fixed;inset:0;background:
 function fb(t){const a=h("textarea",{style:"position:fixed;opacity:0"});a.value=t;document.body.append(a);a.select();let ok=false;try{ok=document.execCommand("copy")}catch(e){}a.remove();toast(ok?"Скопировано, можно отправлять":"Не удалось скопировать")}
 function copy(t){if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(t).then(()=>toast("Скопировано, можно отправлять"),()=>fb(t))}else fb(t)}
 const bc={};
-function blobOf(r){const u=urlOf(r);if(!u)return Promise.resolve(null);return bc[u]||(bc[u]=wmBlob(u))}
+function blobOf(r){const u=urlOf(r);if(!u)return Promise.resolve(null);return bc[u]||(bc[u]=copyBlob(u))}
 async function shareRec(r){
   const u=urlOf(r),site=location.href.split("#")[0],photo=u?new URL(u,location.href).href:"";
   const head="Я кончил за "+fmtMs(r.ms)+" ("+fmtDT(r.ts)+")";
@@ -27,27 +27,30 @@ addEventListener("popstate",e=>{
 
 /* ---------- слайд-шоу ---------- */
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
-function draw(){const ids=photos.map(p=>p.id);bag=bag.filter(i=>ids.includes(i));
+function draw(){const ids=photos.filter(p=>!broken.has(p.id)).map(p=>p.id);bag=bag.filter(i=>ids.includes(i));
   if(!bag.length){bag=shuffle(ids.slice());const last=hist[hist.length-1];if(bag.length>1&&bag[bag.length-1]===last){[bag[0],bag[bag.length-1]]=[bag[bag.length-1],bag[0]]}}
   return bag.pop()}
 function start(){
   if(!photos.length){toast(dbState==="loading"?"Фото ещё загружаются…":"Пока нет фотографий");return}
   bag=[];hist=[];caps=[];pos=-1;shown=0;finishing=false;t0=Date.now();view="show";pushV("show");render();wlOn();musicStart();gameStart();next(true)}
 function next(first){
-  if(pos<hist.length-1){pos++}else{hist.push(draw());shown++;caps.push(shown%3===0||shown%5===0?pick(PH().c):"");pos=hist.length-1;gameNew()}
+  if(pos<hist.length-1){pos++}else{hist.push(draw());shown++;caps.push(shown%3===0||shown%5===0?pickL(PH().c):"");pos=hist.length-1;gameNew()}
   showCur();}
 function prev(){if(finishing)return;if(pos>0){pos--;showCur()}else toast("Это первая фотография")}
 function showCur(){
-  const p=photos.find(p=>p.id===hist[pos]);const img=$("#simg");if(!img)return;
-  img.style.opacity=.2;img.onload=()=>img.style.opacity=1;img.src=p?p.url:"";
-  $("#cap").textContent=caps[pos]||"";preload(bag[bag.length-1]);preload(bag[bag.length-2]);const dl=gDelay(),bb=$("#bar");if(bb){bb.style.animation="none";void bb.offsetWidth;bb.style.animation="bar "+dl+"s linear forwards"}$("#cnt").textContent="Фото №"+(pos+1);
+  const id=hist[pos],p=photos.find(p=>p.id===id),img=$("#simg");if(!img)return;
+  img.style.opacity=.2;img.onload=()=>img.style.opacity=1;
+  img.onerror=()=>{if(!id)return;broken.add(id);toast("Фото пропущено, не открывается: "+decodeURIComponent(id));if(!usable().length){toast("Нет рабочих фото");go("home");return}if(pos===hist.length-1){hist.pop();caps.pop();pos=hist.length-1;shown--}next()};
+  img.src=p?p.url:"";const sb=$("#sbg");if(sb)sb.style.backgroundImage=p?'url("'+p.url+'")':"none";
+  $("#cap").textContent=caps[pos]||"";preload(bag[bag.length-1]);preload(bag[bag.length-2]);const dl=gDelay(),bb=$("#bar");if(bb){bb.style.animation="none";void bb.offsetWidth;bb.style.animation="bar "+dl+"s linear forwards"}
+  const N=usable().length;$("#cnt").textContent="Фото №"+(pos+1)+" · круг "+Math.min(N,N-bag.length)+"/"+N+(esc()?" · накал "+lvl()+"/3":"");
   clearTimeout(timer);timer=setTimeout(()=>next(),dl*1000)}
-let finishing=false,newAch=[];const pre={};
+let finishing=false,newAch=[];const pre={},broken=new Set(),usable=()=>photos.filter(p=>!broken.has(p.id));
 function preload(id){const p=photos.find(x=>x.id===id);if(!p||pre[id])return;const i=new Image();i.decoding="async";i.src=p.url;pre[id]=i;if(i.decode)i.decode().catch(()=>{});const k=Object.keys(pre);if(k.length>8)delete pre[k[0]]}
 function finish(){
   if(finishing||!gameCanFinish())return;finishing=true;gameStop();clearTimeout(timer);musicStop();const ms=Date.now()-t0,p=photos.find(p=>p.id===hist[pos]);
   const r={id:String(Date.now()),ts:Date.now(),ms,pid:hist[pos],url:p?p.url:"",seed:(Math.random()*1e9|0)+1,fx:true};
-  r.ph=pick(PH().f);gameMark(r);const had=ACH.map(x=>x[2](recs()));const all=recs();all.push(r);lsSet(RK,all);newAch=ACH.map((x,i)=>i).filter(i=>!had[i]&&ACH[i][2](all));pending=r;const S=mkSplats(r.seed);
+  r.ph=pickL(PH().f);gameMark(r);const had=ACH.map(x=>x[2](recs()));const all=recs();all.push(r);lsSet(RK,all);newAch=ACH.map((x,i)=>i).filter(i=>!had[i]&&ACH[i][2](all));pending=r;const S=mkSplats(r.seed);
   const st=$("#stage"),im=$("#simg"),cv=h("canvas",{cls:"spl"}),bb=$("#bar");if(bb)bb.style.animation="none";st.append(cv);setTimeout(()=>{if(view==="show")st.append(h("div",{id:"fin"},r.ph))},900);
   splash(cv,im,S,()=>setTimeout(()=>{if(view==="show"){finishing=false;wlOff();exitFs();replV("result");view="result";render()}},RM?1500:1500))}
 
@@ -75,7 +78,7 @@ function statStrip(){const a=recs(),best=a.length?fmtMs(Math.min(...a.map(x=>x.m
 function home(){
   const n=photos.length;
   app.append(h("h1",{cls:"hero"},"Goon-scrolling",h("br"),"2000"),h("div",{cls:"phr"},fem?"Режим для девушек":""),
-    h("div",{cls:"mut"},dbState==="loading"?"Загружаю фотографии…":dbState==="none"?"Не удалось загрузить список фотографий. Обновите страницу.":"Фотографий в коллекции: "+n),
+    h("div",{cls:"mut"},dbState==="loading"?"Загружаю фотографии…":dbState==="none"?"Не удалось загрузить список фотографий. Обновите страницу.":"Фотографий в коллекции: "+n),h("button",{cls:"ib",style:"margin-top:10px",on:{click:diagDialog}},"Проверить фото"),
     statStrip(),h("div",{cls:"card"},intervalBox(),h("div",{style:"height:14px"}),musicBox(),h("div",{style:"height:14px"}),h("button",{cls:"p big",on:{click:start}},"Начать"),h("div",{style:"height:10px"}),h("div",{cls:"grid2"},h("button",{on:{click:()=>{calM=new Date();calSel=null;go("calendar")}}},"Календарь"),h("button",{on:{click:()=>go("records")}},"Рекорды"),h("button",{on:{click:()=>go("stats")}},"Статистика"),h("button",{on:{click:()=>go("ach")}},"Достижения"),h("button",{style:"grid-column:1/-1",on:{click:()=>go("settings")}},"Настройки"),h("button",{style:"grid-column:1/-1",on:{click:boss}},"Босс идёт"))),modeBox(),gameBox(),
     h("div",{cls:"log"},
       h("h2",null,"Последние записи секундомера"),
@@ -93,10 +96,11 @@ function toggleFs(){const sv=$("#sv");if(!sv)return;if(sv.classList.contains("fs
   sv.classList.add("fs");document.body.classList.add("fsm");fsPing();$("#fsb").textContent="Свернуть";evInc("fs");const rq=sv.requestFullscreen||sv.webkitRequestFullscreen;if(rq)try{const p=rq.call(sv);if(p&&p.catch)p.catch(()=>{})}catch(e){}}
 document.addEventListener("fullscreenchange",()=>{if(!document.fullscreenElement)exitFs()});
 function show(){
-  app.append(h("div",{id:"sv",on:{pointerdown:fsPing,pointermove:fsPing,touchstart:swS,touchend:swE}},h("div",{cls:"row",style:"justify-content:space-between;flex:none"},h("span",{id:"cnt",cls:"mut"}),h("button",{id:"fsb",style:"flex:none",on:{click:toggleFs}},"На весь экран"),h("button",{style:"flex:none",on:{click:boss}},"Босс!"),h("button",{style:"flex:none",on:{click:()=>go("home")}},"Выйти")),
-    h("div",{id:"stage"},h("img",{id:"simg",alt:"Фото"}),h("div",{id:"bar"}),h("div",{id:"cmd"})),h("div",{id:"cap"}),h("div",{id:"gstat",cls:"mut",style:"text-align:center;min-height:22px"}),
-    h("button",{on:{click:prev},style:"width:100%"},"← Назад"),
-    h("div",{style:"height:10px"}),h("button",{id:"fbtn",cls:"p big",on:{click:finish}},"Кончить")))}
+  app.append(h("div",{id:"sv",on:{pointerdown:fsPing,pointermove:fsPing,touchstart:swS,touchend:swE}},
+    h("div",{cls:"sh"},h("span",{id:"cnt",cls:"mut"}),h("div",{cls:"shb"},h("button",{id:"fsb",cls:"ib",on:{click:toggleFs}},"На весь экран"),h("button",{cls:"ib",on:{click:boss}},"Босс!"),h("button",{cls:"ib",on:{click:()=>go("home")}},"Выйти"))),
+    h("div",{id:"stage"},h("div",{id:"sbg"}),h("img",{id:"simg",alt:"Фото"}),h("div",{id:"bar"}),h("div",{id:"cmd"}),h("div",{id:"cap"})),
+    h("div",{id:"gstat",cls:"mut"}),
+    h("div",{cls:"ctl2"},h("button",{on:{click:prev}},"← Назад"),h("button",{id:"fbtn",cls:"p big",on:{click:finish}},"Кончить"))))}
 function result(){
   const r=pending;blobOf(r);if(newAch.length){const m=newAch.map(i=>AN(i)[2]+" "+AN(i)[0]).join(", ");newAch=[];setTimeout(()=>toast("Достижение: "+m),700)}
   app.append(h("h1",null,resTitle(r)),h("div",{cls:"mut"},"Фото закреплено в календаре"),h("div",{cls:"phr"},r.ph||""),h("div",{cls:"big-t"},fmtMs(r.ms)),
@@ -140,14 +144,14 @@ function calendar(){
         h("button",{cls:"d",on:{click:()=>ask("Удалить эту запись?",()=>{lsSet(RK,recs().filter(x=>x.id!==r.id));render();toast("Запись удалена")})}},"Удалить")))))}
 
 /* ---------- список фото из папки photos репозитория ---------- */
-async function listNames(){
-  try{const c=sessionStorage.getItem("ss_list_"+PD);if(c)return JSON.parse(c)}catch(e){}
+async function listNames(force){
+  try{const c=force?null:sessionStorage.getItem("ss_list_"+PD);if(c)return JSON.parse(c)}catch(e){}
   let names=null;
   try{const o=location.hostname.split(".")[0];let rp=location.pathname.split("/")[1]||"";if(!rp||/\.html?$/.test(rp))rp=location.hostname;
     const r=await fetch("https://api.github.com/repos/"+o+"/"+rp+"/contents/"+PD);
-    if(r.ok){const j=await r.json();names=j.filter(f=>f.type==="file").map(f=>f.name)}}catch(e){}
+    if(r.ok){const j=await r.json(),F=j.filter(f=>f.type==="file");names=F.map(f=>f.name);window.DIRS=j.filter(f=>f.type==="dir").map(f=>f.name);window.SIZES=Object.fromEntries(F.map(f=>[f.name,f.size]))}}catch(e){}
   if(!names){try{const r=await fetch(PD+".json",{cache:"no-cache"});if(r.ok){const j=await r.json();if(Array.isArray(j))names=j}}catch(e){}}
-  if(names){names=names.filter(n=>/\.(jpe?g|png|webp|gif|avif)$/i.test(n)).sort();try{sessionStorage.setItem("ss_list_"+PD,JSON.stringify(names))}catch(e){}}
+  if(names){window.RAW=names.slice();names=names.filter(n=>/\.(jpe?g|png|webp|gif|avif)$/i.test(n)).sort();try{sessionStorage.setItem("ss_list_"+PD,JSON.stringify(names))}catch(e){}}
   return names}
 async function listAudio(){
   try{const c=sessionStorage.getItem("ss_aud_"+AD);if(c)return JSON.parse(c)}catch(e){}

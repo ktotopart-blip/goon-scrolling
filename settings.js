@@ -10,31 +10,45 @@ async function importData(f){if(!f)return;try{const d=JSON.parse(await f.text())
   toast("Импортировано записей: "+add);evInc("imp");if(window.fxResize)fxResize();render()}catch(e){toast("Файл не подходит")}}
 function loadZip(){return window.JSZip?Promise.resolve():new Promise((ok,no)=>{const s=document.createElement("script");s.src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js";s.onload=ok;s.onerror=no;document.head.append(s)})}
 function compressCard(){
-  let q=85,mx=1920,res=[];const wmI=h("input",{type:"text",cls:"in",value:CFG.wm,maxlength:"40","aria-label":"Текст водяного знака"}),wmC=h("input",{type:"checkbox",checked:"checked",style:"flex:none;width:20px;height:20px","aria-label":"Водяной знак"});const info=h("div",{cls:"mut res"}),list=h("div",{cls:"res"}),acts=h("div",{cls:"row",style:"margin-top:10px"}),inp=h("input",{type:"file",accept:"image/*",multiple:"multiple",style:"display:none"});
+  let q=85,mx=1920,res=[];const info=h("div",{cls:"mut res"}),list=h("div",{cls:"res"}),acts=h("div",{cls:"row",style:"margin-top:10px"}),inp=h("input",{type:"file",accept:"image/*",multiple:"multiple",style:"display:none"});
   const qs=h("input",{type:"range",min:60,max:95,value:q}),ql=h("b",null,q+"%"),ms=h("input",{type:"range",min:800,max:3000,step:100,value:mx}),ml=h("b",null,mx+" px");
   qs.addEventListener("input",()=>{q=+qs.value;ql.textContent=q+"%"});ms.addEventListener("input",()=>{mx=+ms.value;ml.textContent=mx+" px"});
   const kb=n=>Math.round(n/1024)+" КБ";
   inp.addEventListener("change",async()=>{const fs=[...inp.files];res=[];list.replaceChildren();acts.replaceChildren();
     for(let i=0;i<fs.length;i++){info.textContent="Сжимаю "+(i+1)+" из "+fs.length+"…";
       try{const bm=await createImageBitmap(fs[i],{imageOrientation:"from-image"}).catch(()=>createImageBitmap(fs[i])),k=Math.min(1,mx/Math.max(bm.width,bm.height)),c=document.createElement("canvas");c.width=Math.round(bm.width*k);c.height=Math.round(bm.height*k);c.getContext("2d").drawImage(bm,0,0,c.width,c.height);
-        if(wmC.checked)drawWM(c.getContext("2d"),c.width,c.height,wmI.value||CFG.wm);const bl=await new Promise(r=>c.toBlob(r,"image/jpeg",q/100)),nm=(fs[i].name.replace(/\.[^.]+$/,"").replace(/[^A-Za-z0-9_-]+/g,"_")||"photo")+"_"+(i+1)+".jpg";
+        const bl=await new Promise(r=>c.toBlob(r,"image/jpeg",q/100)),nm=(fs[i].name.replace(/\.[^.]+$/,"").replace(/[^A-Za-z0-9_-]+/g,"_")||"photo")+"_"+(i+1)+".jpg";
         res.push({name:nm,blob:bl});list.append(h("div",null,nm+": "+kb(fs[i].size)+" → "+kb(bl.size)))}catch(e){list.append(h("div",null,fs[i].name+": не удалось обработать"))}}
     info.textContent=res.length?"Готово: "+res.length+" фото. Загрузите их в папку фото на GitHub.":"Нет подходящих файлов";
     if(res.length)evInc("cmp");
     if(res.length)acts.append(h("button",{on:{click:async()=>{for(const r of res){dl(r.blob,r.name);await new Promise(o=>setTimeout(o,500))}}}},"Скачать по очереди"),h("button",{on:{click:async()=>{try{await loadZip();const z=new JSZip();res.forEach(r=>z.file(r.name,r.blob));dl(await z.generateAsync({type:"blob"}),"photos.zip")}catch(e){toast("ZIP недоступен, скачайте по очереди")}}}},"Скачать ZIP"))});
-  return h("div",{cls:"card"},h("h2",null,"Сжатие фото"),h("div",{cls:"mut",style:"margin-bottom:8px"},"Уменьшает вес фото, убирает данные съёмки (в том числе геометку) и наносит водяной знак. Загружайте на GitHub уже обработанные копии, а оригиналы храните у себя."),
+  return h("div",{cls:"card"},h("h2",null,"Сжатие фото"),h("div",{cls:"mut",style:"margin-bottom:8px"},"Уменьшает вес фото и убирает данные съёмки (в том числе геометку). Загружайте на GitHub уже обработанные копии, а оригиналы храните у себя."),
     h("div",{cls:"row",style:"justify-content:space-between"},h("span",null,"Качество"),ql),qs,h("div",{cls:"row",style:"justify-content:space-between"},h("span",null,"Макс. сторона"),ml),ms,
-    h("label",{cls:"row",style:"gap:10px;flex-wrap:nowrap;margin-top:12px"},wmC,h("span",{style:"flex:1"},"Нанести водяной знак")),wmI,h("button",{cls:"p",style:"width:100%;margin-top:10px",on:{click:()=>inp.click()}},"Выбрать фото"),inp,info,list,acts)}
+    h("button",{cls:"p",style:"width:100%;margin-top:10px",on:{click:()=>inp.click()}},"Выбрать фото"),inp,info,list,acts)}
+function diagCard(){const out=h("div",{cls:"mut res",style:"margin-top:10px"});
+  return h("div",{cls:"card"},h("h2",null,"Проверка фото"),h("div",{cls:"mut",style:"margin-bottom:10px"},"Находит фото, которые не показываются в этом режиме, и объясняет причину."),h("button",{cls:"p",style:"width:100%",on:{click:()=>runDiag(out)}},"Проверить"),out)}
+async function runDiag(out){out.textContent="Проверяю список файлов…";const names=await listNames(true);if(!names){out.textContent="Не удалось получить список файлов (лимит GitHub или нет сети). Попробуйте позже.";return}
+  const raw=window.RAW||names,skip=raw.filter(n=>!names.includes(n)),dirs=window.DIRS||[],big=names.filter(n=>(window.SIZES||{})[n]>4194304),bad=[];
+  for(let i=0;i<names.length;i++){out.textContent="Проверяю "+(i+1)+" из "+names.length+"…";const why=await new Promise(r=>{const im=new Image();im.onload=()=>r(im.naturalWidth>0?"":"пустое изображение");im.onerror=()=>r("не открывается (повреждён, слишком большой или неверный формат)");im.src=PD+"/"+encodeURIComponent(names[i])+"?c="+Date.now()});if(why)bad.push(names[i]+": "+why)}
+  const L=["Папка "+PD+": файлов "+raw.length+", подходящих фото "+names.length];
+  if(skip.length)L.push("Пропущены из-за формата: "+skip.join(", ")+" (нужны jpg, png, webp, gif, avif). Перекодируйте их в «Сжатие фото».");
+  if(dirs.length)L.push("Вложенные папки не читаются: "+dirs.join(", ")+". Перенесите фото в саму папку.");
+  if(big.length)L.push("Тяжёлые файлы (больше 4 МБ), могут зависать: "+big.join(", "));
+  L.push(bad.length?"Не открываются: "+bad.join("; "):"Все подходящие фото открываются.");
+  out.replaceChildren(...L.map(l=>h("div",{style:"margin:6px 0"},l)))}
+function diagDialog(){const out=h("div",{cls:"res",style:"margin:10px 0;max-height:50vh;overflow:auto"}),o=h("div",{style:"position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;z-index:20;padding:16px"},h("div",{cls:"card",style:"max-width:420px;width:100%;margin:0"},h("h2",null,"Проверка фото"),out,h("button",{style:"width:100%",on:{click:()=>o.remove()}},"Закрыть")));document.body.append(o);runDiag(out)}
 function settings(){
   const q=ls("ss_q","high"),pa=ls("ss_part",true),inp=h("input",{type:"file",accept:"application/json,.json",style:"display:none"});
   inp.addEventListener("change",()=>{importData(inp.files[0]);inp.value=""});
+  const es=ls("ss_esc",true),escSw=h("button",{cls:"sw"+(es?" on":""),role:"switch","aria-checked":String(es),"aria-label":"Эскалация фраз",on:{click:()=>{lsSet("ss_esc",!es);render()}}},h("i"));
   const sw=h("button",{cls:"sw"+(pa?" on":""),role:"switch","aria-checked":String(pa),"aria-label":"Частицы",on:{click:()=>{lsSet("ss_part",!pa);if(window.fxResize)fxResize();render()}}},h("i"));
   page("Настройки",
     h("div",{cls:"card"},h("h2",null,"Качество эффекта"),h("div",{cls:"mut",style:"margin-bottom:10px"},"Влияет на детализацию жидкости и количество частиц. На слабом телефоне выберите «Низкое»."),
       h("div",{cls:"seg"},QL.map(([k,l])=>h("button",{cls:q===k?"p":"",on:{click:()=>{lsSet("ss_q",k);if(window.fxResize)fxResize();render();toast("Качество: "+l);evInc("q")}}},l))),
       h("div",{style:"height:14px"}),h("div",{cls:"row",style:"justify-content:space-between;flex-wrap:nowrap"},h("span",{style:"flex:1"},"Плавающие частицы"),sw)),
+    h("div",{cls:"card"},h("h2",null,"Фразы"),h("div",{cls:"row",style:"justify-content:space-between;flex-wrap:nowrap"},h("span",{style:"flex:1"},"Эскалация: чем дольше сессия, тем откровеннее фразы"),escSw)),
     h("div",{cls:"card"},h("h2",null,"Записи"),h("div",{cls:"mut",style:"margin-bottom:10px"},"Сохраните записи, настройки и прогресс в файл или загрузите их на другом устройстве."),h("div",{cls:"row"},h("button",{on:{click:exportData}},"Экспорт"),h("button",{on:{click:()=>inp.click()}},"Импорт"),inp)),
     h("div",{cls:"card"},h("h2",null,"Приложение"),h("div",{cls:"mut",style:"margin-bottom:10px"},"Добавьте сайт на главный экран, чтобы открывать его как приложение."),h("button",{cls:"p",style:"width:100%",on:{click:async()=>{if(dip){dip.prompt();await dip.userChoice;dip=null}else toast("Откройте меню браузера и выберите «Установить» или «Добавить на главный экран»")}}},"Установить приложение")),
-    compressCard(),
+    compressCard(),diagCard(),
     h("div",{cls:"card"},h("h2",null,"Возраст"),h("button",{style:"width:100%",on:{click:()=>{lsSet("ss_18",false);toast("Подтверждение сброшено");setTimeout(()=>location.reload(),600)}}},"Сбросить подтверждение 18+")))}
 addEventListener("appinstalled",()=>evInc("pwa"));
