@@ -32,30 +32,38 @@ function draw(){const ids=photos.filter(p=>!broken.has(p.id)).map(p=>p.id);bag=b
   return bag.pop()}
 function start(){
   if(!photos.length){toast(dbState==="loading"?"Фото ещё загружаются…":"Пока нет фотографий");return}
-  bag=[];hist=[];caps=[];pos=-1;shown=0;finishing=false;t0=Date.now();view="show";pushV("show");render();wlOn();musicStart();gameStart();next(true)}
+  bag=primed||[];primed=null;hist=[];caps=[];pos=-1;shown=0;shownId=null;finishing=false;t0=Date.now();view="show";pushV("show");render();wlOn();musicStart();gameStart();next(true)}
 function next(first){
   if(pos<hist.length-1){pos++}else{hist.push(draw());shown++;caps.push(shown%3===0||shown%5===0?pickL(PH().c):"");pos=hist.length-1;gameNew()}
   showCur();}
 function prev(){if(finishing)return;if(pos>0){pos--;showCur()}else toast("Это первая фотография")}
+let swapTok=0,shownId=null,primed=null;
+const depth=()=>{const c=navigator.connection;if(c&&c.saveData)return 1;const q=c&&c.effectiveType;return !q||q==="4g"?3:q==="3g"?2:1};
+function prime(){if(!photos.length||(navigator.connection&&navigator.connection.saveData))return;const ids=usable().map(p=>p.id);primed=shuffle(ids.slice());for(let i=1;i<=Math.min(2,ids.length);i++)preload(primed[primed.length-i],i===1?"high":"low")}
 function showCur(){
   const id=hist[pos],p=photos.find(p=>p.id===id),img=$("#simg");if(!img)return;
-  img.style.opacity=.2;img.onload=()=>img.style.opacity=1;
+  const tok=++swapTok,N=usable().length;
+  $("#cnt").textContent="Фото №"+(pos+1)+" · круг "+Math.min(N,N-bag.length)+"/"+N+(esc()?" · накал "+lvl()+"/3":"");
+  clearTimeout(timer);if(!p)return;
+  img.onload=()=>img.style.opacity=1;
   img.onerror=()=>{if(!id)return;broken.add(id);toast("Фото пропущено, не открывается: "+decodeURIComponent(id));if(!usable().length){toast("Нет рабочих фото");go("home");return}if(pos===hist.length-1){hist.pop();caps.pop();pos=hist.length-1;shown--}next()};
-  img.src=p?p.url:"";const sb=$("#sbg");if(sb)sb.style.backgroundImage=p?'url("'+p.url+'")':"none";
-  $("#cap").textContent=caps[pos]||"";preload(bag[bag.length-1]);preload(bag[bag.length-2]);const dl=gDelay(),bb=$("#bar");if(bb){bb.style.animation="none";void bb.offsetWidth;bb.style.animation="bar "+dl+"s linear forwards"}
-  const N=usable().length;$("#cnt").textContent="Фото №"+(pos+1)+" · круг "+Math.min(N,N-bag.length)+"/"+N+(esc()?" · накал "+lvl()+"/3":"");
-  clearTimeout(timer);timer=setTimeout(()=>next(),dl*1000)}
+  const done=()=>{if(tok!==swapTok)return;shownId=id;img.style.opacity=1;img.src=p.url;const sb=$("#sbg");if(sb)sb.style.backgroundImage='url("'+p.url+'")';
+    $("#cap").textContent=caps[pos]||"";const dl=gDelay(),bb=$("#bar");if(bb){bb.style.animation="none";void bb.offsetWidth;bb.style.animation="bar "+dl+"s linear forwards"}
+    clearTimeout(timer);timer=setTimeout(()=>next(),dl*1000);for(let i=1;i<=depth();i++)preload(bag[bag.length-i],i===1?"high":"low")};
+  const im=pre[id]||preload(id,"high");
+  if(im&&im.complete&&im.naturalWidth)done();
+  else{const w=setTimeout(()=>{if(tok===swapTok)img.style.opacity=.55},450),ok=()=>{clearTimeout(w);done()};(im&&im.decode?im.decode():Promise.reject()).then(ok,ok)}}
 let finishing=false,newAch=[];const pre={},broken=new Set(),usable=()=>photos.filter(p=>!broken.has(p.id));
-function preload(id){const p=photos.find(x=>x.id===id);if(!p||pre[id])return;const i=new Image();i.decoding="async";i.src=p.url;pre[id]=i;if(i.decode)i.decode().catch(()=>{});const k=Object.keys(pre);if(k.length>8)delete pre[k[0]]}
+function preload(id,pr){const p=photos.find(x=>x.id===id);if(!p)return null;if(pre[id])return pre[id];const i=new Image();i.decoding="async";if(pr)i.fetchPriority=pr;i.src=p.url;pre[id]=i;if(i.decode)i.decode().catch(()=>{});const k=Object.keys(pre);if(k.length>10)delete pre[k[0]];return i}
 function finish(){
-  if(finishing||!gameCanFinish())return;finishing=true;gameStop();clearTimeout(timer);musicStop();const ms=Date.now()-t0,p=photos.find(p=>p.id===hist[pos]);
-  const r={id:String(Date.now()),ts:Date.now(),ms,pid:hist[pos],url:p?p.url:"",seed:(Math.random()*1e9|0)+1,fx:true};
+  if(finishing||!gameCanFinish())return;finishing=true;gameStop();clearTimeout(timer);musicStop();const ms=Date.now()-t0,p=photos.find(p=>p.id===(shownId||hist[pos]));
+  const r={id:String(Date.now()),ts:Date.now(),ms,pid:shownId||hist[pos],url:p?p.url:"",seed:(Math.random()*1e9|0)+1,fx:true};
   r.ph=pickL(PH().f);gameMark(r);const had=ACH.map(x=>x[2](recs()));const all=recs();all.push(r);lsSet(RK,all);newAch=ACH.map((x,i)=>i).filter(i=>!had[i]&&ACH[i][2](all));pending=r;const S=mkSplats(r.seed);
   const st=$("#stage"),im=$("#simg"),cv=h("canvas",{cls:"spl"}),bb=$("#bar");if(bb)bb.style.animation="none";st.append(cv);setTimeout(()=>{if(view==="show")st.append(h("div",{id:"fin"},r.ph))},900);
   splash(cv,im,S,()=>setTimeout(()=>{if(view==="show"){finishing=false;wlOff();exitFs();replV("result");view="result";render()}},RM?1500:1500))}
 
 /* ---------- экраны ---------- */
-function render(){app.replaceChildren();({home,show,result,calendar,records,stats,ach,settings}[view])()}
+function render(){if(view==="home"&&!primed)prime();if(view==="show")window.fxOff=true;else if(window.fxGo)fxGo();app.replaceChildren();({home,show,result,calendar,records,stats,ach,settings}[view])()}
 function intervalBox(onch){
   const lab=h("b",{cls:"num"},interval+" с");
   const s=h("input",{type:"range",min:1,max:60,step:1,value:interval,"aria-label":"Интервал"});
@@ -85,7 +93,8 @@ function home(){
       (()=>{const r=recs().slice(-5).reverse();return r.length?h("div",null,r.map(x=>h("div",{cls:"rec"},withSplash(x,"",()=>openPhoto(urlOf(x),x)),h("div",{cls:"t"},fmtDT(x.ts)),h("b",null,fmtMs(x.ms)))) ):h("div",{cls:"mut"},"Пока пусто — запусти слайд-шоу и нажми «Кончить».")})()));
   }
 let idleT=0,wl=null,sx0=0,sy0=0;
-function fsPing(){const sv=$("#sv");if(!sv)return;sv.classList.remove("idle");clearTimeout(idleT);idleT=setTimeout(()=>{if(sv.classList.contains("fs"))sv.classList.add("idle")},3500)}
+let lastPing=0;
+function fsPing(){const sv=$("#sv");if(!sv)return;const n=Date.now();if(n-lastPing<300&&!sv.classList.contains("idle"))return;lastPing=n;sv.classList.remove("idle");clearTimeout(idleT);idleT=setTimeout(()=>{if(sv.classList.contains("fs"))sv.classList.add("idle")},3500)}
 async function wlOn(){try{if(navigator.wakeLock&&!wl)wl=await navigator.wakeLock.request("screen")}catch(e){}}
 function wlOff(){try{if(wl)wl.release()}catch(e){}wl=null}
 const swS=e=>{const t=e.touches&&e.touches[0];if(t){sx0=t.clientX;sy0=t.clientY}},swE=e=>{const t=e.changedTouches&&e.changedTouches[0];if(!t||finishing)return;if(t.clientX-sx0>80&&Math.abs(t.clientY-sy0)<60)prev()};

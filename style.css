@@ -137,3 +137,18 @@ img,canvas{-webkit-user-drag:none}.pw{cursor:pointer}#bar,#cmd,#fin,.spl{z-index
 body.fsm #fx{display:none}
 #sv.fs{height:100vh;height:100dvh}#sv.fs>*{transition:opacity .45s}#sv.fs.idle>:not(#stage):not(#cap):not(#gstat){opacity:.28}
 #stage img{will-change:opacity}
+/* слайдшоу: сетка и отображение */
+#sv{display:grid;grid-template-rows:auto minmax(0,1fr) auto auto;gap:12px;height:calc(100vh - 100px);height:calc(100dvh - 100px);min-height:430px}
+#sv #stage{height:auto;min-height:0}
+.sh{display:flex;align-items:center;justify-content:space-between;gap:10px}.shb{display:flex;gap:8px}
+button.ib{min-height:38px;padding:7px 13px;font-size:13px;border-radius:12px}
+.ctl2{display:grid;grid-template-columns:1fr 2fr;gap:10px}.ctl2 button{width:100%}
+#gstat{text-align:center;font-size:14px}#gstat:empty{display:none}
+#cap{position:absolute;left:0;right:0;bottom:0;z-index:2;margin:0;min-height:0;padding:46px 16px 20px;background:linear-gradient(transparent,rgba(5,3,12,.84));color:#fff;text-shadow:0 2px 12px #000}#cap:empty{display:none}
+#sbg{position:absolute;inset:-12%;background-size:cover;background-position:center;filter:blur(28px) saturate(1.25);opacity:.5;transform:scale(1.1)}
+#bar{height:4px;box-shadow:0 0 14px var(--lil)}
+#fin{bottom:24%}
+@media (max-width:480px){.ctl2{grid-template-columns:1fr 1.6fr}}
+/* экономия ресурсов на слабых телефонах */
+body[data-q="low"] .card,body[data-q="low"] #toast{-webkit-backdrop-filter:none;backdrop-filter:none}
+body[data-q="low"] #sbg{display:none}body[data-q="low"] #app>*{animation:none}

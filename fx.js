@@ -2,11 +2,11 @@
 const RM=matchMedia("(prefers-reduced-motion:reduce)").matches;
 (function(){const cv=document.createElement("canvas");cv.id="fx";document.body.prepend(cv);const x=cv.getContext("2d");let W,H,P=[],c="196,176,255";
   const mk=r=>({x:Math.random()*W,y:r?Math.random()*H:H+10,r:Math.random()*1.8+.6,v:Math.random()*.25+.08,a:Math.random()*.5+.25,s:Math.random()*6.28,w:Math.random()*.6+.2});
-  function sz(){W=cv.width=innerWidth;H=cv.height=innerHeight;c=getComputedStyle(document.documentElement).getPropertyValue("--pt").trim()||c;P=Array.from({length:Math.round(Math.min(70,Math.round(W*H/22000))*(ls("ss_part",true)?QF().p:0))},()=>mk(true))}
-  function tick(){x.clearRect(0,0,W,H);for(const p of P){p.y-=p.v;p.s+=.01;p.x+=Math.sin(p.s)*p.w*.4;if(p.y<-10)Object.assign(p,mk(false));
+  function sz(){document.body.dataset.q=ls("ss_q","high");W=cv.width=innerWidth;H=cv.height=innerHeight;c=getComputedStyle(document.documentElement).getPropertyValue("--pt").trim()||c;P=Array.from({length:Math.round(Math.min(70,Math.round(W*H/22000))*(ls("ss_part",true)?QF().p:0))},()=>mk(true))}
+  function tick(){x.clearRect(0,0,W,H);if(window.fxOff)return;for(const p of P){p.y-=p.v;p.s+=.01;p.x+=Math.sin(p.s)*p.w*.4;if(p.y<-10)Object.assign(p,mk(false));
     const g=x.createRadialGradient(p.x,p.y,0,p.x,p.y,p.r*4);g.addColorStop(0,"rgba("+c+","+p.a+")");g.addColorStop(1,"rgba("+c+",0)");x.fillStyle=g;x.beginPath();x.arc(p.x,p.y,p.r*4,0,6.283);x.fill()}
     if(!RM)requestAnimationFrame(tick)}
-  addEventListener("resize",sz);window.fxResize=sz;sz();tick()})();
+  addEventListener("resize",sz);window.fxResize=sz;window.fxGo=()=>{if(window.fxOff){window.fxOff=false;tick()}};sz();tick()})();
 /* ---------- эффект брызг ---------- */
 function rng(a){return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
 function mkSplats(seed){const R=rng(seed||1),P=3+(R()*3|0);return Array.from({length:18},(_,i)=>({x:Math.max(.06,Math.min(.94,.5+(R()-.5)*(.5+R()*.6))),y:.1+R()*.75,r:i<4?.06+R()*.05:.015+R()*.04,d:.02+(i%P)*(.36/P)+R()*.05,ox:.5+(R()-.5)*.05,oy:1.06,arch:.05+R()*.3,L:.4+R()*2.6,bd:(R()-.5)*1.6,am:.2+R(),
