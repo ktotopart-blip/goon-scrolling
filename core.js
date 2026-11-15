@@ -1,6 +1,6 @@
 const fem=/[?&]mode=f/.test(location.search),RK=fem?'ss_rec_f':'ss_rec',PD=fem?"photos_f":"photos",AD=fem?"audio_f":"audio";
 document.documentElement.dataset.m=fem?"f":"m";if(fem)document.title="Goon-scrolling 2000 · для девушек";
-let role=ls("ss_role_"+(fem?"f":"m"),fem?"d":"n");const pick=a=>a[Math.floor(Math.random()*a.length)];
+let role=ls("ss_role_"+(fem?"f":"m"),fem?"d":"n");
 let tracks=[],audioOn=ls("ss_aud_on",false),apl=[],ai=0,aerr=0;const audioEl=new Audio();let photos=[],db=null,assets=null,canEdit=false,dbState="loading";
 let view="home",interval=+ls("ss_int",5),bag=[],hist=[],caps=[],pos=-1,shown=0,timer=null,t0=0,calM=new Date(),calSel=null,pending=null;
 const $=s=>document.querySelector(s),app=$("#app");
@@ -19,3 +19,4 @@ const QF=()=>({high:{g:300,d:2,p:1},medium:{g:190,d:1.5,p:.5},low:{g:110,d:1,p:.
 const hs=()=>typeof history!=="undefined"&&history.pushState?history:null,hd=()=>{const H=hs();return H&&H.state&&H.state.d||0};
 function pushV(v,x){const H=hs();if(H)try{H.pushState(Object.assign({v,d:hd()+1},x||{}),"")}catch(e){}}
 function replV(v){const H=hs();if(H)try{H.replaceState({v,d:hd()},"")}catch(e){}}
+const thumbUrl=r=>{const n=(window.THUMBS||new Set()),base=(r.pid||"").replace(/\.[^.]+$/,"");if(!base||!n.has(base))return urlOf(r);return (fem?"thumbs_f":"thumbs")+"/"+encodeURIComponent(base+".jpg")};

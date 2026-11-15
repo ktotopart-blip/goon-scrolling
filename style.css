@@ -152,3 +152,16 @@ button.ib{min-height:38px;padding:7px 13px;font-size:13px;border-radius:12px}
 /* экономия ресурсов на слабых телефонах */
 body[data-q="low"] .card,body[data-q="low"] #toast{-webkit-backdrop-filter:none;backdrop-filter:none}
 body[data-q="low"] #sbg{display:none}body[data-q="low"] #app>*{animation:none}
+/* подписи снова под фото */
+#sv{grid-template-rows:auto minmax(0,1fr) auto auto auto}
+#sv #cap{position:static;padding:0 8px;background:none;color:var(--lil);text-shadow:none;min-height:48px;display:flex;align-items:center;justify-content:center;text-align:center}
+#sv #cap:empty{display:flex}
+/* язык и цвет оформления */
+.swrow{display:flex;gap:12px}
+.sw2{flex:none;width:42px;height:42px;border-radius:50%;background:var(--c);border:2px solid transparent;padding:0;min-height:0}
+.sw2.on{border-color:#fff;box-shadow:0 0 0 2px var(--c)}
+/* тепловая карта активности */
+.hmrow{display:flex;gap:3px;overflow-x:auto;padding-bottom:4px}
+.hmcol{display:flex;flex-direction:column;gap:3px}
+.hm{width:11px;height:11px;border-radius:3px;background:rgba(255,255,255,.06)}
+.hm.l1{background:rgba(var(--pt),.35)}.hm.l2{background:rgba(var(--pt),.65)}.hm.l3{background:rgb(var(--pt))}
