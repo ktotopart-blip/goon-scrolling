@@ -1,1 +1,64 @@
+name: Optimize photos
 
+# Запускается при каждой загрузке файлов в папки с фото.
+# Делает три вещи для новых/изменённых JPG, PNG, WEBP:
+#  1. уменьшает фото до 1600px по длинной стороне;
+#  2. убирает данные съёмки (включая геометку);
+#  3. создаёт маленькую копию 320px в соседней папке thumbs/ или thumbs_f/
+#     для быстрой загрузки календаря и списков.
+# Исходные файлы заменяются уже обработанными — отдельно хранить оригиналы не нужно,
+# но лучше держать копии у себя на компьютере на всякий случай.
+
+on:
+  push:
+    paths:
+      - 'photos/**'
+      - 'photos_f/**'
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  optimize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Установить ImageMagick
+        run: sudo apt-get update -y && sudo apt-get install -y imagemagick
+
+      - name: Оптимизировать и создать превью
+        run: |
+          set -e
+          for DIR in photos photos_f; do
+            [ -d "$DIR" ] || continue
+            THUMBS="thumbs"; [ "$DIR" = "photos_f" ] && THUMBS="thumbs_f"
+            mkdir -p "$THUMBS"
+            find "$DIR" -maxdepth 1 -type f \( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' -o -iname '*.webp' \) | while read -r f; do
+              name=$(basename "$f")
+              # уменьшаем и чистим метаданные прямо в исходном файле
+              mogrify -auto-orient -resize '1600x1600>' -strip -quality 85 "$f"
+              # превью 320px для календаря и списков
+              convert "$f" -auto-orient -resize '320x320>' -strip -quality 80 "$THUMBS/${name%.*}.jpg"
+            done
+          done
+
+      - name: Обновить списки файлов (photos.json и audio.json)
+        run: |
+          python3 - <<'PY'
+          import json, os
+          for d, out in [("photos","photos.json"), ("photos_f","photos_f.json"),
+                         ("audio","audio.json"), ("audio_f","audio_f.json")]:
+              if os.path.isdir(d):
+                  names = sorted(f for f in os.listdir(d) if not f.startswith('.'))
+                  json.dump(names, open(out, "w"), ensure_ascii=False, indent=1)
+          PY
+
+      - name: Сохранить изменения
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add photos photos_f thumbs thumbs_f photos.json photos_f.json audio.json audio_f.json 2>/dev/null || true
+          git diff --staged --quiet || git commit -m "Автооптимизация фото и превью"
+          git push
