@@ -6,7 +6,7 @@ const EN={
 "Загружаю фотографии…":"Loading photos…","Не удалось загрузить список фотографий. Обновите страницу.":"Could not load the photo list. Refresh the page.",
 "Фотографий в коллекции: ":"Photos in the collection: ","Проверить фото":"Check photos",
 "Начать":"Start","Календарь":"Calendar","Рекорды":"Records","Статистика":"Statistics","Достижения":"Achievements","Настройки":"Settings","Босс идёт":"Boss is coming",
-"Последние записи секундомера":"Recent stopwatch records","Пока пусто — запусти слайд-шоу и нажми «Кончить».":"Nothing yet — start the slideshow and press “Кончить”.",
+"Последние записи секундомера":"Recent stopwatch records","Пока пусто — запусти слайд-шоу и нажми «Кончить».":"Nothing yet — start the slideshow and press “Cum”.",
 "← Назад":"← Back","Выйти":"Exit","На весь экран":"Fullscreen","Свернуть":"Collapse","Босс!":"Boss!","Фото":"Photo","Это первая фотография":"This is the first photo",
 "Фото закреплено в календаре":"The photo is pinned to the calendar","Вытереться":"Wipe off","Вытерто":"Wiped",
 "Поделиться результатом":"Share the result","На главную":"Home","Открыть календарь":"Open calendar","← На главную":"← Home",
