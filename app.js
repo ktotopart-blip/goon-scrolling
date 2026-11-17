@@ -1,6 +1,6 @@
 function ask(msg,yes){const o=h("div",{style:"position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;z-index:20;padding:16px"},h("div",{cls:"card",style:"max-width:340px;margin:0"},h("div",{style:"margin-bottom:14px;font-weight:600"},msg),h("div",{cls:"row"},h("button",{on:{click:()=>o.remove()}},T("Отмена")),h("button",{cls:"p",on:{click:()=>{o.remove();yes()}}},T("Удалить")))));document.body.append(o)}
 function fb(t){const a=h("textarea",{style:"position:fixed;opacity:0"});a.value=t;document.body.append(a);a.select();let ok=false;try{ok=document.execCommand("copy")}catch(e){}a.remove();toast(ok?"Скопировано, можно отправлять":"Не удалось скопировать")}
-function copy(t){if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(t).then(()=>toast("Скопировано, можно отправлять"),()=>fb(t))}else fb(t)}
+function copy(t){if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(t).then(()=>toast(T("Скопировано, можно отправлять")),()=>fb(t))}else fb(t)}
 const bc={};
 function blobOf(r){const u=urlOf(r);if(!u)return Promise.resolve(null);return bc[u]||(bc[u]=copyBlob(u))}
 async function shareRec(r){
@@ -14,7 +14,7 @@ async function shareRec(r){
       if(navigator.canShare({files:[f]})){await navigator.share({files:[f],title:"Goon-scrolling 2000",text:head+"\n"+site});return}}
   }catch(e){if(e&&e.name==="AbortError")return}
   try{await navigator.share({title:"Goon-scrolling 2000",text:head+(photo?". Вот на какое фото: "+photo:""),url:site})}catch(e){if(!e||e.name!=="AbortError")copy(full)}}
-function openPhoto(u,r){if(!u){toast("Фото недоступно");return}const im=$("#mimg"),cv=$("#mcv");im.onload=()=>paintSplash(cv,im,r);im.src=u;$("#modal").style.display="flex";pushV(view,{m:1});if(im.complete)paintSplash(cv,im,r)}
+function openPhoto(u,r){if(!u){toast(T("Фото недоступно"));return}const im=$("#mimg"),cv=$("#mcv");im.onload=()=>paintSplash(cv,im,r);im.src=u;$("#modal").style.display="flex";pushV(view,{m:1});if(im.complete)paintSplash(cv,im,r)}
 function hideModal(){$("#modal").style.display="none"}
 function closeModal(){const H=hs();if(H&&H.state&&H.state.m)H.back();else hideModal()}
 $("#mclose").onclick=closeModal;$("#modal").onclick=e=>{if(e.target.id==="modal")closeModal()};
@@ -49,7 +49,7 @@ function prime(){if(!photos.length||(navigator.connection&&navigator.connection.
 function showCur(){
   const id=hist[pos],p=photos.find(p=>p.id===id),img=$("#simg");if(!img)return;
   const tok=++swapTok,N=usable().length;
-  $("#cnt").textContent="Фото №"+(pos+1)+" · круг "+Math.min(N,N-bag.length)+"/"+N+(esc()?" · накал "+lvl()+"/3":"");
+  $("#cnt").textContent=T("Фото №")+(pos+1)+T(" · круг ")+Math.min(N,N-bag.length)+"/"+N+(esc()?T(" · накал ")+lvl()+"/3":"");
   clearTimeout(timer);if(!p)return;
   img.onload=()=>img.style.opacity=1;
   img.onerror=()=>{if(!id)return;broken.add(id);toast(T("Фото пропущено, не открывается: ")+decodeURIComponent(id));if(!usable().length){toast(T("Нет рабочих фото"));go("home");return}if(pos===hist.length-1){hist.pop();caps.pop();pos=hist.length-1;shown--}next()};
@@ -82,11 +82,11 @@ function musicBox(){
     if(!tracks.length){toast(dbState==="loading"?"Аудио ещё загружается…":"Аудиофайлов пока нет");return}
     audioOn=!audioOn;lsSet("ss_aud_on",audioOn);render()}}},h("i"));
   return h("div",{cls:"row",style:"justify-content:space-between;flex-wrap:nowrap"},h("div",{style:"flex:1"},h("div",null,"Стоны"),h("div",{cls:"mut"},tracks.length?(on?"Включена · треков: ":"Выключена · треков: ")+tracks.length:dbState==="loading"?"Загрузка…":"Треки не найдены")),sw)}
-function playTrack(){audioEl.src=apl[ai];audioEl.play().catch(()=>toast("Браузер не дал включить музыку"))}
+function playTrack(){audioEl.src=apl[ai];audioEl.play().catch(()=>toast(T("Браузер не дал включить музыку")))}
 function musicStart(){if(!audioOn||!tracks.length)return;apl=shuffle(tracks.slice());ai=0;aerr=0;playTrack()}
 function musicStop(){try{audioEl.pause();audioEl.removeAttribute("src");audioEl.load()}catch(e){}apl=[]}
 audioEl.addEventListener("ended",()=>{if(!apl.length)return;aerr=0;ai++;if(ai>=apl.length){ai=0;shuffle(apl)}playTrack()});
-audioEl.addEventListener("error",()=>{if(!apl.length)return;aerr++;if(aerr>=apl.length){toast("Не удалось воспроизвести аудио");musicStop();return}ai=(ai+1)%apl.length;playTrack()});
+audioEl.addEventListener("error",()=>{if(!apl.length)return;aerr++;if(aerr>=apl.length){toast(T("Не удалось воспроизвести аудио"));musicStop();return}ai=(ai+1)%apl.length;playTrack()});
 function statStrip(){const a=recs(),best=a.length?fmtMs(Math.min(...a.map(x=>x.ms))):"—",ok=ACH.filter(x=>x[2](a)).length,P=(l,v)=>h("div",{cls:"pill"},h("div",{cls:"pv"},String(v)),h("div",{cls:"mut"},l));
   return h("div",{cls:"stats"},P(T("Записей"),a.length),P(T("Лучшее"),best),P(T("Награды"),ok+"/"+ACH.length))}
 function home(){
@@ -117,7 +117,7 @@ function show(){
     h("div",{id:"gstat",cls:"mut"}),
     h("div",{cls:"ctl2"},h("button",{on:{click:prev}},T("← Назад")),h("button",{id:"fbtn",cls:"p big",on:{click:finish}},"Кончить"))))}
 function result(){
-  const r=pending;blobOf(r);if(newAch.length){const m=newAch.map(i=>AN(i)[2]+" "+AN(i)[0]).join(", ");newAch=[];setTimeout(()=>toast("Достижение: "+m),700)}
+  const r=pending;blobOf(r);if(newAch.length){const m=newAch.map(i=>AN(i)[2]+" "+AN(i)[0]).join(", ");newAch=[];setTimeout(()=>toast(T("Достижение: ")+m),700)}
   app.append(h("h1",null,resTitle(r)),h("div",{cls:"mut"},T("Фото закреплено в календаре")),h("div",{cls:"phr"},r.ph||""),h("div",{cls:"big-t"},fmtMs(r.ms)),
     (()=>{const wp=withSplash(r,"",()=>openPhoto(urlOf(r),r),true);return h("div",{cls:"card"},wp,h("div",{cls:"mut",style:"margin-top:10px"},fmtDT(r.ts)),r.fx&&r.seed?h("button",{style:"width:100%;margin-top:12px",on:{click:()=>wipe(wp.querySelector("canvas"),()=>{const all=recs(),x=all.find(v=>v.id===r.id);if(x){x.fx=false;lsSet(RK,all)}r.fx=false;toast(T("Вытерто"));evInc("wipe");render()})}},T("Вытереться")):null)})(),
     h("button",{cls:"p big",on:{click:()=>shareRec(r)}},T("Поделиться результатом")),h("div",{style:"height:10px"}),h("div",{cls:"row"},h("button",{cls:"p",on:{click:()=>go("home")}},T("На главную")),h("button",{on:{click:()=>{calM=new Date(r.ts);calSel=dkey(new Date(r.ts));go("calendar")}}},T("Открыть календарь"))))}
