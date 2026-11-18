@@ -37,9 +37,6 @@ async function runDiag(out){out.textContent=T("Проверяю список ф�
   L.push(bad.length?T("Не открываются: ")+bad.join("; "):T("Все подходящие фото открываются."));
   out.replaceChildren(...L.map(l=>h("div",{style:"margin:6px 0"},l)))}
 function diagDialog(){const out=h("div",{cls:"res",style:"margin:10px 0;max-height:50vh;overflow:auto"}),o=h("div",{style:"position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;z-index:20;padding:16px"},h("div",{cls:"card",style:"max-width:420px;width:100%;margin:0"},h("h2",null,T("Проверка фото")),out,h("button",{style:"width:100%",on:{click:()=>o.remove()}},"Закрыть")));document.body.append(o);runDiag(out)}
-function langBox(){const cur=lang();
-  return h("div",{cls:"card"},h("h2",null,T("Язык")),h("div",{cls:"seg"},[["ru","Русский"],["en","English"]].map(([k,l])=>h("button",{cls:cur===k?"p":"",on:{click:()=>{lsSet("ss_lang",k);render()}}},l))),
-    h("div",{cls:"mut",style:"margin-top:8px"},cur==="en"?"Captions, finishing lines and achievements are rewritten in English, not translated word-for-word — that keeps the jokes working.":"Подписи, финальные фразы и достижения на английском пишутся заново, а не переводятся дословно, — так шутки не теряют смысл."))}
 function accentBox(){if(fem)return null;const cur=ls("ss_accent","purple");
   return h("div",{cls:"card"},h("h2",null,T("Цвет оформления")),h("div",{cls:"swrow"},Object.keys(ACCENTS).map(k=>h("button",{cls:"sw2"+(cur===k?" on":""),style:"--c:"+ACCENTS[k][0],"aria-label":k,on:{click:()=>{lsSet("ss_accent",k);applyAccent();render()}}}))))}
 function settings(){
@@ -48,7 +45,7 @@ function settings(){
   const es=ls("ss_esc",true),escSw=h("button",{cls:"sw"+(es?" on":""),role:"switch","aria-checked":String(es),"aria-label":T("Эскалация фраз"),on:{click:()=>{lsSet("ss_esc",!es);render()}}},h("i"));
   const sw=h("button",{cls:"sw"+(pa?" on":""),role:"switch","aria-checked":String(pa),"aria-label":"Частицы",on:{click:()=>{lsSet("ss_part",!pa);if(window.fxResize)fxResize();render()}}},h("i"));
   page(T("Настройки"),
-    langBox(),accentBox(),
+    accentBox(),
     h("div",{cls:"card"},h("h2",null,T("Качество эффекта")),h("div",{cls:"mut",style:"margin-bottom:10px"},T("Влияет на детализацию жидкости и количество частиц. На слабом телефоне выберите «Низкое».")),
       h("div",{cls:"seg"},QL.map(([k,l])=>h("button",{cls:q===k?"p":"",on:{click:()=>{lsSet("ss_q",k);if(window.fxResize)fxResize();render();toast(T("Качество: ")+T(l));evInc("q")}}},T(l)))),
       h("div",{style:"height:14px"}),h("div",{cls:"row",style:"justify-content:space-between;flex-wrap:nowrap"},h("span",{style:"flex:1"},T("Плавающие частицы")),sw)),

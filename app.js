@@ -136,12 +136,12 @@ function shareWeek(a){const now=Date.now(),wk=a.filter(x=>x.ts>now-7*864e5),n=wk
   x.fillStyle="#f4f0ff";x.font="700 46px Arial";x.fillText("Goon-scrolling 2000",48,80);x.fillStyle=fem?"#ffb3d9":"#c4b0ff";x.font="600 26px Arial";x.fillText("Итоги недели",48,122);
   const rows=[["Записей за неделю",String(n)],["Лучшее время",n?fmtMs(best):"—"],["Текущая серия дней",String(st.cur)],["Лучшая серия",String(st.best)]];
   x.font="500 30px Arial";rows.forEach((r,i)=>{const y=210+i*68;x.fillStyle="#a398c0";x.fillText(r[0],48,y);x.fillStyle="#fff";x.font="700 34px Arial";x.textAlign="right";x.fillText(r[1],952,y);x.textAlign="left";x.font="500 30px Arial"});
-  x.fillStyle="#6a5f88";x.font="22px Arial";x.fillText(new Date().toLocaleDateString(loc()),48,520);
+  x.fillStyle="#6a5f88";x.font="22px Arial";x.fillText(new Date().toLocaleDateString("ru-RU"),48,520);
   c.toBlob(async b=>{if(!b)return;const f=new File([b],"week.jpg",{type:"image/jpeg"});if(navigator.share&&navigator.canShare&&navigator.canShare({files:[f]})){try{await navigator.share({files:[f],title:"Goon-scrolling 2000"});return}catch(e){if(e&&e.name==="AbortError")return}}dl(b,"goon-week-"+dkey(new Date())+".jpg")},"image/jpeg",.92)}
 function stats(){const a=recs(),n=a.length,tot=a.reduce((s,x)=>s+x.ms,0),cnt={};a.forEach(x=>{cnt[x.pid]=(cnt[x.pid]||0)+1});
   const fav=Object.entries(cnt).sort((p,q)=>q[1]-p[1])[0],fr=fav&&a.find(x=>x.pid===fav[0]),on=k=>a.filter(x=>dkey(new Date(x.ts))===k).length,st=streaks(a);
   const tile=(l,v)=>h("div",{cls:"card",style:"margin:0;text-align:center"},h("div",{cls:"num"},String(v)),h("div",{cls:"mut"},l));
-  const days=[...Array(7)].map((_,i)=>{const d=new Date(Date.now()-(6-i)*864e5);return{l:d.toLocaleDateString(loc(),{weekday:"short"}),c:on(dkey(d))}}),mx=Math.max(1,...days.map(d=>d.c));
+  const days=[...Array(7)].map((_,i)=>{const d=new Date(Date.now()-(6-i)*864e5);return{l:d.toLocaleDateString("ru-RU",{weekday:"short"}),c:on(dkey(d))}}),mx=Math.max(1,...days.map(d=>d.c));
   page(T("Статистика"),h("div",{cls:"grid2"},tile(T("Всего"),n),tile(T("Сегодня"),on(dkey(new Date()))),tile(T("За 7 дней"),a.filter(x=>x.ts>Date.now()-7*864e5).length),tile(T("Среднее время"),n?fmtMs(tot/n):"—"),tile(T("Всего времени"),fmtMs(tot)),tile(T("Лучшее время"),n?fmtMs(Math.min(...a.map(x=>x.ms))):"—")),
     h("div",{cls:"card"},h("div",{cls:"grid2"},tile(T("Текущая серия"),st.cur+" "+T("дней")),tile(T("Лучшая серия"),st.best+" "+T("дней")))),
     h("div",{cls:"card"},h("h2",null,T("Активность")),heatmap(a)),
@@ -161,7 +161,7 @@ function calendar(){
   for(let i=0;i<off;i++)cells.push(h("i"));
   for(let d=1;d<=dim;d++){const k=y+"-"+String(m+1).padStart(2,"0")+"-"+String(d).padStart(2,"0");
     cells.push(h("button",{cls:(days.has(k)?"has ":"")+(k===calSel?"sel ":"")+(k===today?"today ":"")+(((off+d-1)%7)>=5?"we":""),on:{click:()=>{calSel=k;render()}}},String(d),cm[k]?h("span",{cls:"bd"},String(cm[k])):null))}
-  const title=first.toLocaleDateString(loc(),{month:"long",year:"numeric"});
+  const title=first.toLocaleDateString("ru-RU",{month:"long",year:"numeric"});
   const shift=n=>()=>{calM=new Date(y,m+n,1);calSel=null;render()};
   const list=calSel?all.filter(r=>dkey(new Date(r.ts))===calSel).sort((a,b)=>a.ts-b.ts):[];
   app.append(h("button",{on:{click:()=>go("home")}},T("← На главную")),h("h1",null,T("Календарь")),
@@ -171,7 +171,7 @@ function calendar(){
     h("div",{cls:"card"},h("h2",{style:"margin-top:0"},calSel?T("Записи за ")+calSel.split("-").reverse().join("."):T("Выбери день")),
       calSel&&!list.length?h("div",{cls:"mut"},T("В этот день записей нет.")):null,
       list.map(r=>h("div",{cls:"rec"},withSplash(r,"",()=>openPhoto(urlOf(r),r),true),
-        h("div",{cls:"t"},new Date(r.ts).toLocaleTimeString(loc()),h("br"),h("b",null,"⏱ "+fmtMs(r.ms))),
+        h("div",{cls:"t"},new Date(r.ts).toLocaleTimeString("ru-RU"),h("br"),h("b",null,"⏱ "+fmtMs(r.ms))),
         h("div",{style:"display:flex;align-items:center;gap:8px;flex:none"},h("span",{cls:"mut"},T("Брызги")),h("button",{cls:"sw"+(r.fx&&r.seed?" on":""),role:"switch","aria-checked":String(!!(r.fx&&r.seed)),"aria-label":T("Показывать брызги"),on:{click:()=>toggleFx(r.id)}},h("i"))),h("button",{on:{click:()=>shareRec(r)}},T("Поделиться")),h("button",{on:{click:()=>openPhoto(urlOf(r),r)}},T("Открыть")),
         h("button",{cls:"d",on:{click:()=>ask(T("Удалить эту запись?"),()=>{lsSet(RK,recs().filter(x=>x.id!==r.id));render();toast(T("Запись удалена"))})}},T("Удалить"))))))}
 

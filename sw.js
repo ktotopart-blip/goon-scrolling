@@ -1,4 +1,4 @@
-const V="goon-v1",M="goon-media",SHELL=["./","index.html","style.css","core.js","i18n.js","data.js","content_en.js","phrases.js","fx.js","settings.js","games.js","protect.js","app.js","manifest.webmanifest","icon-192.png"];
+const V="goon-v2",M="goon-media",SHELL=["./","index.html","style.css","core.js","i18n.js","data.js","phrases.js","fx.js","settings.js","games.js","protect.js","app.js","manifest.webmanifest","icon-192.png"];
 self.addEventListener("install",e=>{e.waitUntil(caches.open(V).then(c=>c.addAll(SHELL)).then(()=>self.skipWaiting()))});
 self.addEventListener("activate",e=>{e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(x=>x!==V&&x!==M).map(x=>caches.delete(x)))).then(()=>self.clients.claim()))});
 async function trim(c,n){const k=await c.keys();for(let i=0;i<k.length-n;i++)await c.delete(k[i])}

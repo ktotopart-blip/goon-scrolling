@@ -13,10 +13,10 @@ ACH.push(["Железная воля","Выиграть режим «Не кон
 ICON["Железная воля"]="💪";ICON["Монах"]="🧘";ICON["Слабак"]="🥀";
 ACHF.push(["Сила воли","Выиграть режим «Не кончи»","💪"],["Монахиня","Выиграть «Не кончи» на 5 минут","🧘"],["Не удержалась","Проиграть «Не кончи» быстрее 10 секунд","🥀"]);
 const mmss=ms=>{const s=Math.max(0,Math.ceil(ms/1000));return Math.floor(s/60)+":"+String(s%60).padStart(2,"0")};
-function gameBox(){const L=lang()==="en"?GL_EN:GL,cur=L.find(x=>x[0]===gm)||L[0];
-  return h("div",{cls:"card"},h("h2",null,T("Режим игры")),h("div",{cls:"seg"},L.map(([k,l])=>h("button",{cls:gm===k?"p":"",on:{click:()=>{gm=k;lsSet("ss_game",k);render()}}},l))),
+function gameBox(){const cur=GL.find(x=>x[0]===gm)||GL[0];
+  return h("div",{cls:"card"},h("h2",null,"Режим игры"),h("div",{cls:"seg"},GL.map(([k,l])=>h("button",{cls:gm===k?"p":"",on:{click:()=>{gm=k;lsSet("ss_game",k);render()}}},l))),
     h("div",{cls:"mut",style:"margin:10px 0"},cur[2]),
-    gm==="c"?h("div",{cls:"seg"},[1,3,5].map(m=>h("button",{cls:gdur===m?"p":"",on:{click:()=>{gdur=m;lsSet("ss_gdur",m);render()}}},m+(lang()==="en"?" min":" мин")))):null)}
+    gm==="c"?h("div",{cls:"seg"},[1,3,5].map(m=>h("button",{cls:gdur===m?"p":"",on:{click:()=>{gdur=m;lsSet("ss_gdur",m);render()}}},m+" мин"))):null)}
 function gameStart(){gameStop();gs={mode:"",n:0,freeze:0};if(gm==="c")gEnd=Date.now()+gdur*6e4;if(gm==="p")lockEnd=Date.now()+(20+Math.random()*70)*1e3;if(gm==="c"||gm==="p")gInt=setInterval(gTick,250);gTick()}
 function gameStop(){clearInterval(gInt);gInt=null}
 function gTick(){if(view!=="show"||bossT)return;const g=$("#gstat"),b=$("#fbtn");if(!g||!b)return;
